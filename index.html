@@ -1,0 +1,606 @@
+<!doctype html>
+<html lang="zh-HK">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<title>學字樂園</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="學字樂園">
+<meta name="theme-color" content="#eeedeb">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Iansui&display=swap" rel="stylesheet">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" href="icon-192.png">
+<style>
+  /* 風格參考 poco-a-poco.style：淺灰米底、白卡、粉彩積木色、藍綠標題 */
+  :root {
+    --bg: #eeedeb;
+    --card: #ffffff;
+    --ink: #4a4a4a;
+    --muted: #8f9599;
+    --teal: #5f9fb0;
+    --teal-dark: #4a8698;
+    --mint: #bfe0c9;
+    --mint-ink: #4f8a63;
+    --lilac: #cdc6e6;
+    --lilac-ink: #6e64a0;
+    --pink: #ecc8d0;
+    --pink-ink: #b06a7e;
+    --yellow: #f3e9b3;
+    --blue: #b4d2de;
+    --line: #e2e0dc;
+    --shadow: 0 4px 16px rgba(80, 90, 95, .08);
+    --han: "PingFang HK", "PingFang TC", "Noto Sans HK", "Heiti TC", sans-serif;
+    /* 全個 app 用芫荽（圓潤楷書），載入唔到就用系統字 */
+    --learn: "Iansui", "Kaiti TC", var(--han);
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin: 0; height: 100%; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--learn);
+    -webkit-user-select: none; user-select: none;
+    -webkit-touch-callout: none;
+    overflow: hidden;
+    padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+  }
+  button { font-family: inherit; color: inherit; border: none; cursor: pointer; transition: transform .15s; }
+  button:active { transform: scale(.96); }
+  .screen { display: none; height: 100%; flex-direction: column; align-items: center; padding: 24px; position: relative; }
+  .screen.active { display: flex; }
+
+  /* 背景粉彩積木 */
+  .deco { position: absolute; inset: 0; pointer-events: none; overflow: hidden; z-index: 0; }
+  .deco i { position: absolute; display: block; opacity: .85; animation: float 7s ease-in-out infinite; }
+  .deco .sq { width: 64px; height: 64px; border-radius: 10px; }
+  .deco .ci { width: 72px; height: 72px; border-radius: 50%; }
+  .deco .half { width: 96px; height: 48px; border-radius: 96px 96px 0 0; }
+  .deco .tri { width: 0; height: 0; border-left: 40px solid transparent; border-right: 40px solid transparent; border-bottom: 70px solid var(--c); }
+  @keyframes float { 0%,100% { transform: translateY(0) rotate(var(--r, 0deg)); } 50% { transform: translateY(-10px) rotate(var(--r, 0deg)); } }
+  .screen > *:not(.deco) { position: relative; z-index: 1; }
+
+  /* top bar */
+  .topbar { width: 100%; display: flex; justify-content: space-between; align-items: center; min-height: 64px; }
+  .icon-btn {
+    width: 64px; height: 64px; border-radius: 50%; background: var(--card);
+    font-size: 28px; box-shadow: var(--shadow); display: grid; place-items: center;
+  }
+  .progress { flex: 1; height: 14px; margin: 0 20px; background: var(--card); border-radius: 99px; overflow: hidden; }
+  .progress > div { height: 100%; width: 0; background: var(--mint); border-radius: 99px; transition: width .4s; }
+
+  /* home */
+  .title { font-size: clamp(48px, 9vw, 84px); font-weight: 400; color: var(--teal); margin: 6vh 0 1vh; letter-spacing: .18em; }
+  .subtitle { font-size: 22px; color: var(--muted); margin-bottom: 5vh; letter-spacing: .1em; }
+  .menu { display: flex; flex-direction: column; gap: 20px; width: min(500px, 90vw); }
+  .big-btn {
+    font-size: 36px; font-weight: 400; padding: 26px; border-radius: 99px; letter-spacing: .08em;
+    background: var(--mint); color: var(--mint-ink); box-shadow: var(--shadow);
+    display: flex; align-items: center; justify-content: center; gap: 16px;
+  }
+  .big-btn.blue { background: var(--lilac); color: var(--lilac-ink); }
+  .big-btn.purple { background: var(--pink); color: var(--pink-ink); }
+  .home-stats { margin-top: 4vh; font-size: 20px; color: var(--muted); background: rgba(255,255,255,.75); padding: 10px 24px; border-radius: 99px; }
+  .parent-btn { position: absolute !important; right: 24px; bottom: calc(24px + env(safe-area-inset-bottom)); width: 52px; height: 52px; font-size: 22px; opacity: .55; }
+  .parent-btn .ring { position: absolute; inset: -4px; border-radius: 50%; border: 4px solid var(--teal); clip-path: inset(0 100% 0 0); }
+  .parent-btn { touch-action: none; }
+  .parent-btn:active { transform: none; }
+  .parent-btn.holding { opacity: 1; }
+  .parent-btn.holding .ring { animation: fillring 1.5s linear forwards; }
+  .parent-hint {
+    position: absolute !important; right: 88px; bottom: calc(34px + env(safe-area-inset-bottom)); z-index: 2;
+    background: var(--card); color: var(--muted); font-size: 16px; padding: 8px 16px; border-radius: 99px;
+    box-shadow: var(--shadow); opacity: 0; transition: opacity .3s; pointer-events: none;
+  }
+  .parent-hint.show { opacity: 1; }
+  @keyframes fillring { to { clip-path: inset(0 0 0 0); } }
+
+  /* lesson */
+  .stage { flex: 1; min-height: 0; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2vh; }
+  .intro-card {
+    background: var(--card); border-radius: 40px; box-shadow: var(--shadow);
+    padding: 2vh 6vw 3vh; display: flex; font-size: inherit; flex-direction: column; align-items: center;
+    animation: pop .4s ease-out;
+  }
+  .intro-emoji { font-size: clamp(48px, 9vh, 110px); line-height: 1.1; }
+  .intro-char { font-family: var(--learn); font-size: clamp(120px, 28vh, 300px); line-height: 1.1; font-weight: 400; color: var(--ink); }
+  .new-badge { background: var(--yellow); color: #8a7a3a; font-size: 22px; font-weight: 400; padding: 6px 22px; border-radius: 99px; letter-spacing: .1em; }
+  .prompt { font-size: 28px; color: var(--muted); display: flex; align-items: center; gap: 16px; letter-spacing: .05em; }
+  .speak-btn {
+    width: 112px; height: 112px; border-radius: 50%; background: var(--teal); color: #fff;
+    font-size: 50px; box-shadow: var(--shadow);
+  }
+  .choices { display: flex; gap: 3vw; flex-wrap: wrap; justify-content: center; }
+  .choice {
+    width: clamp(160px, 24vw, 240px); aspect-ratio: 1; border-radius: 36px; background: var(--card);
+    font-family: var(--learn); font-size: clamp(100px, 15vw, 160px); font-weight: 400; box-shadow: var(--shadow);
+    display: grid; place-items: center; transition: background .2s, transform .15s;
+  }
+  .choice.right { background: var(--mint); color: var(--mint-ink); animation: bounce .5s; }
+  .choice.wrong { background: #e6e4e0; color: #c4c1bb; animation: shake .4s; }
+  .next-btn { font-size: 32px; padding: 18px 56px; flex-shrink: 0; }
+
+  @keyframes pop { from { transform: scale(.6); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+  @keyframes bounce { 0%,100% { transform: scale(1); } 40% { transform: scale(1.12); } }
+  @keyframes shake { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-14px); } 75% { transform: translateX(14px); } }
+
+  /* reward */
+  .reward-sticker {
+    font-size: clamp(120px, 26vh, 220px); line-height: 1.2; background: var(--card); border-radius: 50%;
+    padding: 4vh; box-shadow: var(--shadow); animation: spin-in .9s ease-out;
+  }
+  @keyframes spin-in { from { transform: scale(0) rotate(-360deg); } to { transform: scale(1) rotate(0); } }
+  .reward-text { font-size: 52px; font-weight: 400; color: var(--teal); letter-spacing: .1em; }
+  .confetti { position: fixed; top: -40px; pointer-events: none; animation: fall linear forwards; z-index: 10; }
+  @keyframes fall { to { transform: translateY(110vh) rotate(540deg); } }
+
+  /* grids */
+  .page-title { font-size: 36px; font-weight: 400; color: var(--teal); letter-spacing: .15em; }
+  .grid {
+    flex: 1; width: 100%; overflow-y: auto; -webkit-overflow-scrolling: touch;
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 20px;
+    padding: 24px 4px; align-content: start;
+  }
+  .tile {
+    aspect-ratio: 1; border-radius: 28px; background: var(--card); box-shadow: var(--shadow);
+    display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative;
+  }
+  .tile .han { font-family: var(--learn); font-size: 80px; line-height: 1; }
+  .tile .emo { font-size: 28px; margin-top: 6px; }
+  .tile.locked { background: rgba(255,255,255,.45); color: #cfccc6; box-shadow: none; }
+  .tile.sticker { font-size: 80px; }
+  .stars { position: absolute; top: 8px; right: 12px; font-size: 16px; }
+  .empty-note { font-size: 26px; color: var(--muted); margin-top: 10vh; text-align: center; line-height: 1.7; }
+
+  /* parent */
+  #parent { overflow-y: auto; }
+  .panel { width: min(760px, 100%); background: var(--card); border-radius: 24px; padding: 24px; margin-top: 20px; box-shadow: var(--shadow); font-size: 18px; line-height: 1.6; }
+  .panel h3 { margin: 0 0 12px; color: var(--teal); font-weight: 400; }
+  table { width: 100%; border-collapse: collapse; }
+  td, th { text-align: center; padding: 6px; border-bottom: 1px solid var(--line); }
+  th { color: var(--muted); font-weight: 400; }
+  td.han { font-family: var(--learn); font-size: 32px; }
+  .small-btn { font-size: 18px; padding: 12px 22px; border-radius: 99px; background: var(--blue); margin: 4px 8px 4px 0; }
+  .small-btn.danger { background: var(--pink); color: var(--pink-ink); }
+</style>
+</head>
+<body>
+
+<!-- 主頁 -->
+<section id="home" class="screen active">
+  <div class="deco" aria-hidden="true">
+    <i class="sq" style="--c:var(--blue);background:var(--c);top:8%;left:6%;--r:12deg"></i>
+    <i class="ci" style="background:var(--pink);top:18%;left:14%;animation-delay:-2s"></i>
+    <i class="tri" style="--c:var(--mint);top:70%;left:7%;animation-delay:-4s"></i>
+    <i class="half" style="background:var(--yellow);top:84%;left:20%;animation-delay:-1s"></i>
+    <i class="sq" style="--c:var(--lilac);background:var(--c);top:10%;right:9%;--r:-10deg;animation-delay:-3s"></i>
+    <i class="half" style="background:var(--mint);top:24%;right:5%;--r:90deg;animation-delay:-5s"></i>
+    <i class="ci" style="background:var(--yellow);top:66%;right:10%;animation-delay:-2.5s"></i>
+    <i class="sq" style="--c:var(--pink);background:var(--c);top:80%;right:22%;--r:25deg;animation-delay:-1.5s"></i>
+  </div>
+  <div class="title">學字樂園</div>
+  <div class="subtitle">一齊嚟學中文字！</div>
+  <div class="menu">
+    <button class="big-btn" id="start-btn">▶ 開始學字</button>
+    <button class="big-btn blue" data-go="words">📖 我識嘅字</button>
+    <button class="big-btn purple" data-go="stickers">⭐ 貼紙簿</button>
+  </div>
+  <div class="home-stats" id="home-stats"></div>
+  <button class="icon-btn parent-btn" id="parent-btn" aria-label="家長設定（長按）">⚙️<span class="ring"></span></button>
+  <div class="parent-hint" id="parent-hint">家長請長按 ⚙️</div>
+</section>
+
+<!-- 上堂 -->
+<section id="lesson" class="screen">
+  <div class="topbar">
+    <button class="icon-btn" data-go="home" aria-label="返主頁">🏠</button>
+    <div class="progress"><div id="progress-bar"></div></div>
+    <div style="width:64px"></div>
+  </div>
+  <div class="stage" id="stage"></div>
+</section>
+
+<!-- 我識嘅字 -->
+<section id="words" class="screen">
+  <div class="topbar">
+    <button class="icon-btn" data-go="home" aria-label="返主頁">🏠</button>
+    <div class="page-title">我識嘅字</div>
+    <div style="width:64px"></div>
+  </div>
+  <div class="grid" id="word-grid"></div>
+</section>
+
+<!-- 貼紙簿 -->
+<section id="stickers" class="screen">
+  <div class="topbar">
+    <button class="icon-btn" data-go="home" aria-label="返主頁">🏠</button>
+    <div class="page-title">貼紙簿</div>
+    <div style="width:64px"></div>
+  </div>
+  <div class="grid" id="sticker-grid"></div>
+</section>
+
+<!-- 家長 -->
+<section id="parent" class="screen">
+  <div class="topbar">
+    <button class="icon-btn" data-go="home" aria-label="返主頁">🏠</button>
+    <div class="page-title">家長設定</div>
+    <div style="width:64px"></div>
+  </div>
+  <div class="panel">
+    <h3>🔊 讀音</h3>
+    <div id="voice-status"></div>
+    <button class="small-btn" id="test-voice">試吓把聲</button>
+  </div>
+  <div class="panel">
+    <h3>📊 學習進度</h3>
+    <div id="parent-summary"></div>
+    <table id="parent-table"></table>
+  </div>
+  <div class="panel">
+    <h3>⚙️ 其他</h3>
+    <button class="small-btn danger" id="reset-btn">清除所有進度</button>
+  </div>
+</section>
+
+<script>
+// ---------- 字庫 ----------
+// say: TTS 讀嘅句子（「X，YY 嘅 X」幫佢分辨同音字）
+const CHARS = [
+  { c: '人', e: '🧍', say: '人，大人嘅人' },
+  { c: '口', e: '👄', say: '口，個口嘅口' },
+  { c: '手', e: '✋', say: '手，隻手嘅手' },
+  { c: '目', e: '👁️', say: '目，題目嘅目' },
+  { c: '日', e: '☀️', say: '日，太陽嘅日' },
+  { c: '月', e: '🌙', say: '月，月光嘅月' },
+  { c: '山', e: '⛰️', say: '山，高山嘅山' },
+  { c: '水', e: '💧', say: '水，飲水嘅水' },
+  { c: '火', e: '🔥', say: '火，火車嘅火' },
+  { c: '木', e: '🌳', say: '木，樹木嘅木' },
+  { c: '大', e: '🐘', say: '大，大細嘅大' },
+  { c: '小', e: '🐜', say: '小，小朋友嘅小' },
+  { c: '魚', e: '🐟', say: '魚，金魚嘅魚' },
+  { c: '鳥', e: '🐦', say: '鳥，雀鳥嘅鳥' },
+  { c: '馬', e: '🐴', say: '馬，騎馬嘅馬' },
+  { c: '牛', e: '🐮', say: '牛，牛奶嘅牛' },
+  { c: '羊', e: '🐑', say: '羊，綿羊嘅羊' },
+  { c: '雨', e: '🌧️', say: '雨，落雨嘅雨' },
+  { c: '花', e: '🌸', say: '花，花朵嘅花' },
+  { c: '門', e: '🚪', say: '門，開門嘅門' },
+  { c: '米', e: '🍚', say: '米，白米嘅米' },
+  { c: '心', e: '❤️', say: '心，開心嘅心' },
+  { c: '耳', e: '👂', say: '耳，耳仔嘅耳' },
+  { c: '石', e: '🪨', say: '石，石頭嘅石' },
+];
+const STICKERS = ['🦄','🐼','🐶','🐱','🐰','🦊','🐻','🐨','🐯','🦁','🐸','🐵','🐧','🐥','🦋','🐞','🐙','🦖','🐳','🦒','🌈','🍓','🍦','🧁','🍩','🎈','🚀','🌟','🍉','🎀'];
+const PRAISE = ['好叻呀！', '啱喇！', '好嘢！', '叻叻豬！', '答啱咗！'];
+const NEW_PER_SESSION = 3;
+const MAX_REVIEWS = 6;
+// 間隔（日）：box 0..5
+const INTERVALS = [0, 1, 2, 4, 7, 14];
+const DAY = 24 * 60 * 60 * 1000;
+
+// ---------- 儲存 ----------
+const STORE_KEY = 'jcl-v1';
+function loadState() {
+  try {
+    const s = JSON.parse(localStorage.getItem(STORE_KEY));
+    if (s && s.cards) return s;
+  } catch (e) {}
+  return { cards: {}, stickers: [], sessions: 0 };
+}
+function saveState() {
+  try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); } catch (e) {}
+}
+let state = loadState();
+const byChar = Object.fromEntries(CHARS.map(x => [x.c, x]));
+
+// ---------- 聲音 ----------
+let voice = null;
+function pickVoice() {
+  const vs = speechSynthesis.getVoices();
+  voice = vs.find(v => /zh[-_]HK/i.test(v.lang)) ||
+          vs.find(v => /yue/i.test(v.lang)) ||
+          vs.find(v => /Sinji|Cantonese|粵|廣東/i.test(v.name)) || null;
+}
+if ('speechSynthesis' in window) {
+  pickVoice();
+  speechSynthesis.onvoiceschanged = pickVoice;
+}
+function speak(text) {
+  if (!('speechSynthesis' in window)) return;
+  if (!voice) pickVoice();
+  speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = 'zh-HK';
+  if (voice) u.voice = voice;
+  u.rate = 0.8;
+  speechSynthesis.speak(u);
+}
+// iPad 要喺用戶撳掣嗰下即刻出聲，之後 setTimeout 入面讀音先唔會俾 Safari 擋咗
+let speechUnlocked = false;
+function unlockAudio() {
+  if (!speechUnlocked && 'speechSynthesis' in window) {
+    const u = new SpeechSynthesisUtterance(' ');
+    u.volume = 0;
+    speechSynthesis.speak(u);
+    speechUnlocked = true;
+  }
+  try {
+    audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+  } catch (e) {}
+}
+let audioCtx = null;
+function chime(good) {
+  try {
+    audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+    const notes = good ? [660, 880, 1320] : [300, 240];
+    notes.forEach((f, i) => {
+      const o = audioCtx.createOscillator(), g = audioCtx.createGain();
+      o.type = 'sine'; o.frequency.value = f;
+      const t = audioCtx.currentTime + i * 0.12;
+      g.gain.setValueAtTime(0.0001, t);
+      g.gain.exponentialRampToValueAtTime(0.25, t + 0.02);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + 0.3);
+      o.connect(g).connect(audioCtx.destination);
+      o.start(t); o.stop(t + 0.32);
+    });
+  } catch (e) {}
+}
+
+// ---------- 畫面切換 ----------
+function show(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.toggle('active', s.id === id));
+  if (id === 'home') renderHome();
+  if (id === 'words') renderWords();
+  if (id === 'stickers') renderStickers();
+  if (id === 'parent') renderParent();
+  if (id !== 'lesson') speechSynthesis && speechSynthesis.cancel();
+}
+document.querySelectorAll('[data-go]').forEach(b => b.addEventListener('click', () => show(b.dataset.go)));
+
+function learnedChars() { return CHARS.filter(x => state.cards[x.c]); }
+function renderHome() {
+  const n = learnedChars().length;
+  document.getElementById('home-stats').textContent =
+    n ? `你已經學咗 ${n} 個字，有 ${state.stickers.length} 張貼紙 ⭐` : '撳「開始學字」學第一個字啦！';
+}
+
+// ---------- 上堂 ----------
+const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+
+let lesson = null;
+function buildLesson() {
+  const now = Date.now();
+  const due = learnedChars()
+    .filter(x => state.cards[x.c].due <= now)
+    .sort((a, b) => state.cards[a.c].due - state.cards[b.c].due)
+    .slice(0, MAX_REVIEWS);
+  const nNew = due.length >= MAX_REVIEWS ? 1 : NEW_PER_SESSION;
+  const fresh = CHARS.filter(x => !state.cards[x.c]).slice(0, nNew);
+  // 冇新字又冇要溫嘅字：溫最弱嗰幾個
+  let review = due;
+  if (!fresh.length && !due.length) {
+    review = learnedChars().sort((a, b) => state.cards[a.c].box - state.cards[b.c].box).slice(0, 5);
+  }
+  const steps = [];
+  fresh.forEach(x => steps.push({ type: 'intro', ch: x }));
+  // 新字之間穿插溫書，新字考兩次
+  const quiz = shuffle([...review, ...fresh]).map(x => ({ type: 'quiz', ch: x }));
+  quiz.push(...shuffle(fresh).map(x => ({ type: 'quiz', ch: x })));
+  steps.push(...quiz);
+  return { steps, i: 0, retried: new Set(), introduced: new Set(fresh.map(x => x.c)) };
+}
+
+function startLesson() {
+  unlockAudio();
+  lesson = buildLesson();
+  show('lesson');
+  runStep();
+}
+document.getElementById('start-btn').addEventListener('click', startLesson);
+
+function runStep() {
+  const total = lesson.steps.length;
+  document.getElementById('progress-bar').style.width = `${(lesson.i / total) * 100}%`;
+  if (lesson.i >= total) return finishLesson();
+  const step = lesson.steps[lesson.i];
+  if (step.type === 'intro') renderIntro(step.ch); else renderQuiz(step);
+}
+function nextStep() { lesson.i++; runStep(); }
+
+function renderIntro(ch) {
+  const stage = document.getElementById('stage');
+  stage.innerHTML = `
+    <div class="new-badge">新字！</div>
+    <button class="intro-card" id="intro-card">
+      <div class="intro-emoji">${ch.e}</div>
+      <div class="intro-char">${ch.c}</div>
+    </button>
+    <div class="prompt">撳個字再聽多次 👆</div>
+    <button class="big-btn next-btn">識喇 →</button>`;
+  stage.querySelector('#intro-card').onclick = () => speak(ch.say);
+  stage.querySelector('.next-btn').onclick = () => {
+    const now = Date.now();
+    if (!state.cards[ch.c]) state.cards[ch.c] = { box: 0, due: now, right: 0, wrong: 0, added: now };
+    saveState();
+    nextStep();
+  };
+  setTimeout(() => speak(ch.say), 300);
+}
+
+function renderQuiz(step) {
+  const ch = step.ch;
+  const known = new Set([...learnedChars().map(x => x.c), ...lesson.introduced]);
+  // 干擾選項：優先用識咗嘅字，唔夠就用其他字
+  let pool = shuffle(CHARS.filter(x => x.c !== ch.c && known.has(x.c)));
+  if (pool.length < 2) pool = pool.concat(shuffle(CHARS.filter(x => x.c !== ch.c && !known.has(x.c))));
+  const options = shuffle([ch, ...pool.slice(0, 2)]);
+  const stage = document.getElementById('stage');
+  stage.innerHTML = `
+    <div class="prompt"><button class="speak-btn" aria-label="再聽">🔊</button> 邊個係呢個字？</div>
+    <div class="choices">${options.map(o => `<button class="choice" data-c="${o.c}">${o.c}</button>`).join('')}</div>`;
+  stage.querySelector('.speak-btn').onclick = () => speak(ch.say);
+  let firstTry = true, done = false;
+  stage.querySelectorAll('.choice').forEach(btn => {
+    btn.onclick = () => {
+      if (done || btn.classList.contains('wrong')) return;
+      if (btn.dataset.c === ch.c) {
+        done = true;
+        btn.classList.add('right');
+        btn.innerHTML = `${ch.c}`;
+        chime(true);
+        speak(PRAISE[Math.floor(Math.random() * PRAISE.length)]);
+        record(ch.c, firstTry);
+        setTimeout(nextStep, 1400);
+      } else {
+        if (firstTry && !lesson.retried.has(ch.c)) {
+          // 答錯：遲啲再考多次
+          lesson.retried.add(ch.c);
+          lesson.steps.push({ type: 'quiz', ch });
+        }
+        firstTry = false;
+        btn.classList.add('wrong');
+        chime(false);
+        setTimeout(() => speak('再試吓。' + ch.say), 400);
+      }
+    };
+  });
+  setTimeout(() => speak(ch.say), 300);
+}
+
+function record(c, correct) {
+  const card = state.cards[c];
+  if (!card) return;
+  const now = Date.now();
+  // 同一堂已經答過就唔再升級，避免一堂內跳太多級
+  if (card.lastSeen && now - card.lastSeen < 60 * 60 * 1000 && correct) {
+    card.right++; card.lastSeen = now; saveState(); return;
+  }
+  if (correct) { card.right++; card.box = Math.min(card.box + 1, INTERVALS.length - 1); }
+  else { card.wrong++; card.box = Math.max(0, card.box - 2); }
+  // 到期時間設喺嗰日朝早，等佢第日一開就見到
+  const d = new Date(now + INTERVALS[card.box] * DAY);
+  d.setHours(0, 0, 0, 0);
+  card.due = card.box === 0 ? now : d.getTime();
+  card.lastSeen = now;
+  saveState();
+}
+
+function finishLesson() {
+  const sticker = STICKERS[Math.floor(Math.random() * STICKERS.length)];
+  state.stickers.push(sticker);
+  state.sessions++;
+  saveState();
+  const stage = document.getElementById('stage');
+  stage.innerHTML = `
+    <div class="reward-text">好叻呀！🎉</div>
+    <div class="reward-sticker">${sticker}</div>
+    <div class="prompt">你得到一張新貼紙！</div>
+    <button class="big-btn next-btn">返主頁</button>`;
+  stage.querySelector('.next-btn').onclick = () => show('home');
+  chime(true);
+  speak('好叻呀！你得到一張新貼紙！');
+  confetti();
+}
+function confetti() {
+  const colors = ['#bfe0c9', '#cdc6e6', '#ecc8d0', '#f3e9b3', '#b4d2de'];
+  for (let i = 0; i < 36; i++) {
+    const s = document.createElement('div');
+    s.className = 'confetti';
+    const size = 14 + Math.random() * 18;
+    s.style.width = s.style.height = size + 'px';
+    s.style.background = colors[i % colors.length];
+    s.style.borderRadius = i % 2 ? '50%' : '4px';
+    s.style.left = Math.random() * 100 + 'vw';
+    s.style.animationDuration = 2 + Math.random() * 2 + 's';
+    s.style.animationDelay = Math.random() * 0.8 + 's';
+    document.body.appendChild(s);
+    setTimeout(() => s.remove(), 5000);
+  }
+}
+
+// ---------- 我識嘅字 / 貼紙簿 ----------
+function renderWords() {
+  const grid = document.getElementById('word-grid');
+  const learned = learnedChars();
+  if (!learned.length) {
+    grid.innerHTML = `<div class="empty-note" style="grid-column:1/-1">仲未學字住，<br>返主頁撳「開始學字」啦！</div>`;
+    return;
+  }
+  grid.innerHTML = CHARS.map(x => {
+    const card = state.cards[x.c];
+    if (!card) return `<div class="tile locked"><div class="han">？</div></div>`;
+    const stars = card.box >= 4 ? '⭐⭐⭐' : card.box >= 2 ? '⭐⭐' : '⭐';
+    return `<button class="tile" data-c="${x.c}"><span class="stars">${stars}</span><div class="han">${x.c}</div><div class="emo">${x.e}</div></button>`;
+  }).join('');
+  grid.querySelectorAll('[data-c]').forEach(b => b.onclick = () => speak(byChar[b.dataset.c].say));
+}
+function renderStickers() {
+  const grid = document.getElementById('sticker-grid');
+  grid.innerHTML = state.stickers.length
+    ? state.stickers.map(s => `<div class="tile sticker">${s}</div>`).join('')
+    : `<div class="empty-note" style="grid-column:1/-1">每上完一堂就有一張貼紙！</div>`;
+}
+
+// ---------- 家長（長按 1.5 秒入） ----------
+const pbtn = document.getElementById('parent-btn');
+const phint = document.getElementById('parent-hint');
+let holdTimer = null, hintTimer = null, opened = false;
+const startHold = e => {
+  e.preventDefault();
+  // 捉住個 pointer，手指郁少少離開個掣都唔會取消
+  try { pbtn.setPointerCapture(e.pointerId); } catch (err) {}
+  opened = false;
+  pbtn.classList.add('holding');
+  holdTimer = setTimeout(() => { opened = true; endHold(); show('parent'); }, 1500);
+};
+const endHold = () => {
+  pbtn.classList.remove('holding');
+  clearTimeout(holdTimer);
+  if (!opened) {
+    // 撳得太快：提示要長按
+    phint.classList.add('show');
+    clearTimeout(hintTimer);
+    hintTimer = setTimeout(() => phint.classList.remove('show'), 2000);
+  }
+};
+pbtn.addEventListener('pointerdown', startHold);
+['pointerup', 'pointercancel'].forEach(ev => pbtn.addEventListener(ev, endHold));
+pbtn.addEventListener('contextmenu', e => e.preventDefault());
+
+function renderParent() {
+  pickVoice();
+  document.getElementById('voice-status').innerHTML = voice
+    ? `用緊：<b>${voice.name}</b>（${voice.lang}）`
+    : `⚠️ 搵唔到廣東話聲。iPad 請去「設定 → 輔助使用 → 朗讀內容 → 聲音 → 中文（香港）」下載。`;
+  const learned = learnedChars();
+  const strong = learned.filter(x => state.cards[x.c].box >= 4).length;
+  document.getElementById('parent-summary').innerHTML =
+    `學咗 <b>${learned.length}</b> / ${CHARS.length} 個字，熟練 <b>${strong}</b> 個，上咗 <b>${state.sessions}</b> 堂。`;
+  const fmt = t => t <= Date.now() ? '今日' : new Date(t).toLocaleDateString('zh-HK', { month: 'numeric', day: 'numeric' });
+  document.getElementById('parent-table').innerHTML =
+    `<tr><th>字</th><th>程度</th><th>答啱</th><th>答錯</th><th>下次溫</th></tr>` +
+    learned.map(x => { const c = state.cards[x.c]; return `<tr><td class="han">${x.c}</td><td>${c.box}/5</td><td>${c.right}</td><td>${c.wrong}</td><td>${fmt(c.due)}</td></tr>`; }).join('');
+}
+document.getElementById('test-voice').onclick = () => speak('你好！我哋一齊學中文字啦！');
+document.getElementById('reset-btn').onclick = () => {
+  if (confirm('確定要清除所有學習進度同貼紙？')) {
+    state = { cards: {}, stickers: [], sessions: 0 };
+    saveState();
+    renderParent();
+  }
+};
+
+renderHome();
+if ('serviceWorker' in navigator && location.protocol !== 'file:') {
+  navigator.serviceWorker.register('sw.js').catch(() => {});
+}
+</script>
+</body>
+</html>
