@@ -122,6 +122,8 @@
   }
   .choice.right { background: var(--mint); color: var(--mint-ink); animation: bounce .5s; }
   .choice.wrong { background: #e6e4e0; color: #c4c1bb; animation: shake .4s; }
+  .intro-char.word { font-size: clamp(90px, 20vh, 220px); letter-spacing: .05em; }
+  .choice.word { width: clamp(210px, 28vw, 300px); aspect-ratio: 3 / 2; font-size: clamp(60px, 8.5vw, 96px); }
   .next-btn { font-size: 32px; padding: 18px 56px; flex-shrink: 0; }
 
   @keyframes pop { from { transform: scale(.6); opacity: 0; } to { transform: scale(1); opacity: 1; } }
@@ -151,6 +153,9 @@
   }
   .tile .han { font-family: var(--learn); font-size: 80px; line-height: 1; }
   .tile .emo { font-size: 28px; margin-top: 6px; }
+  .tile.word .han { font-size: 48px; }
+  .level-head { grid-column: 1 / -1; font-size: 26px; color: var(--teal); letter-spacing: .1em; padding: 8px 4px 0; display: flex; justify-content: space-between; align-items: baseline; }
+  .level-head small { font-size: 18px; color: var(--muted); }
   .tile.locked { background: rgba(255,255,255,.45); color: #cfccc6; box-shadow: none; }
   .tile.sticker { font-size: 80px; }
   .stars { position: absolute; top: 8px; right: 12px; font-size: 16px; }
@@ -249,8 +254,10 @@
 
 <script>
 // ---------- 字庫 ----------
-// say: TTS 讀嘅句子（「X，YY 嘅 X」幫佢分辨同音字）
-const CHARS = [
+// 分關：每關先學單字（chars），再學用學過嘅字組成嘅詞語（words）
+// say: TTS 讀嘅句子（「X，YY 嘅 X」幫佢分辨同音字）；詞語唔寫 say 就直接讀個詞
+const LEVELS = [
+  { name: '身體同大自然', chars: [
   { c: '人', e: '🧍', say: '人，大人嘅人' },
   { c: '口', e: '👄', say: '口，個口嘅口' },
   { c: '手', e: '✋', say: '手，隻手嘅手' },
@@ -275,8 +282,219 @@ const CHARS = [
   { c: '心', e: '❤️', say: '心，開心嘅心' },
   { c: '耳', e: '👂', say: '耳，耳仔嘅耳' },
   { c: '石', e: '🪨', say: '石，石頭嘅石' },
+  ], words: [
+  { c: '大人', e: '🧑' },
+  { c: '小鳥', e: '🐤' },
+  { c: '火山', e: '🌋' },
+  { c: '山水', e: '🏞️' },
+  { c: '山羊', e: '🐐' },
+  { c: '水牛', e: '🐃' },
+  { c: '木馬', e: '🎠' },
+  { c: '大門', e: '🚪' },
+  ] },
+  { name: '數字', chars: [
+  { c: '一', e: '1️⃣', say: '一，一個嘅一' },
+  { c: '二', e: '2️⃣', say: '二，二月嘅二' },
+  { c: '三', e: '3️⃣', say: '三，三個嘅三' },
+  { c: '四', e: '4️⃣', say: '四，四個嘅四' },
+  { c: '五', e: '5️⃣', say: '五，五個嘅五' },
+  { c: '六', e: '6️⃣', say: '六，六個嘅六' },
+  { c: '七', e: '7️⃣', say: '七，七個嘅七' },
+  { c: '八', e: '8️⃣', say: '八，八個嘅八' },
+  { c: '九', e: '9️⃣', say: '九，九個嘅九' },
+  { c: '十', e: '🔟', say: '十，十個嘅十' },
+  ], words: [] },
+  { name: '屋企人', chars: [
+  { c: '爸', e: '👨', say: '爸，爸爸嘅爸' },
+  { c: '媽', e: '👩', say: '媽，媽媽嘅媽' },
+  { c: '哥', e: '👦', say: '哥，哥哥嘅哥' },
+  { c: '姐', e: '👧', say: '姐，姐姐嘅姐' },
+  { c: '弟', e: '👶', say: '弟，弟弟嘅弟' },
+  { c: '妹', e: '🎀', say: '妹，妹妹嘅妹' },
+  { c: '我', e: '🙋', say: '我，你我嘅我' },
+  { c: '你', e: '👉', say: '你，你好嘅你' },
+  { c: '家', e: '🏡', say: '家，家人嘅家' },
+  ], words: [
+  { c: '爸爸', e: '👨' },
+  { c: '媽媽', e: '👩' },
+  { c: '哥哥', e: '👦' },
+  { c: '姐姐', e: '👧' },
+  { c: '弟弟', e: '👶' },
+  { c: '妹妹', e: '🎀' },
+  { c: '大家', e: '🙌' },
+  { c: '家人', e: '👨‍👩‍👧' },
+  ] },
+  { name: '動物', chars: [
+  { c: '狗', e: '🐶', say: '狗，小狗嘅狗' },
+  { c: '貓', e: '🐱', say: '貓，花貓嘅貓' },
+  { c: '雞', e: '🐔', say: '雞，雞蛋嘅雞' },
+  { c: '豬', e: '🐷', say: '豬，豬仔嘅豬' },
+  { c: '兔', e: '🐰', say: '兔，白兔嘅兔' },
+  { c: '虎', e: '🐯', say: '虎，老虎嘅虎' },
+  { c: '象', e: '🐘', say: '象，大象嘅象' },
+  { c: '龍', e: '🐲', say: '龍，龍舟嘅龍' },
+  { c: '蛇', e: '🐍', say: '蛇，一條蛇嘅蛇' },
+  { c: '鴨', e: '🦆', say: '鴨，鴨仔嘅鴨' },
+  ], words: [
+  { c: '大象', e: '🐘' },
+  { c: '小狗', e: '🐶' },
+  { c: '小貓', e: '🐱' },
+  { c: '小雞', e: '🐥' },
+  { c: '小豬', e: '🐷' },
+  { c: '小兔', e: '🐰' },
+  ] },
+  { name: '顏色', chars: [
+  { c: '紅', e: '🔴', say: '紅，紅色嘅紅' },
+  { c: '白', e: '⚪', say: '白，白色嘅白' },
+  { c: '黑', e: '⚫', say: '黑，黑色嘅黑' },
+  { c: '黃', e: '🟡', say: '黃，黃色嘅黃' },
+  { c: '綠', e: '🟢', say: '綠，綠色嘅綠' },
+  { c: '藍', e: '🔵', say: '藍，藍色嘅藍' },
+  { c: '色', e: '🎨', say: '色，顏色嘅色' },
+  ], words: [
+  { c: '紅色', e: '🟥' },
+  { c: '白色', e: '⬜' },
+  { c: '黑色', e: '⬛' },
+  { c: '黃色', e: '🟨' },
+  { c: '綠色', e: '🟩' },
+  { c: '藍色', e: '🟦' },
+  { c: '紅花', e: '🌺' },
+  { c: '白兔', e: '🐇' },
+  { c: '黃牛', e: '🐂' },
+  { c: '白米', e: '🍚' },
+  ] },
+  { name: '天氣', chars: [
+  { c: '天', e: '🌤️', say: '天，天空嘅天' },
+  { c: '雲', e: '☁️', say: '雲，白雲嘅雲' },
+  { c: '風', e: '🌬️', say: '風，大風嘅風' },
+  { c: '雪', e: '❄️', say: '雪，雪人嘅雪' },
+  { c: '星', e: '⭐', say: '星，星星嘅星' },
+  { c: '光', e: '💡', say: '光，月光嘅光' },
+  { c: '土', e: '🟫', say: '土，泥土嘅土' },
+  { c: '草', e: '🌿', say: '草，草地嘅草' },
+  { c: '田', e: '🌾', say: '田，田地嘅田' },
+  ], words: [
+  { c: '白雲', e: '☁️' },
+  { c: '大風', e: '🌬️' },
+  { c: '大雨', e: '🌧️' },
+  { c: '雪人', e: '⛄' },
+  { c: '星星', e: '✨' },
+  { c: '月光', e: '🌕' },
+  { c: '天光', e: '🌅' },
+  { c: '花草', e: '🌼' },
+  ] },
+  { name: '方向', chars: [
+  { c: '上', e: '⬆️', say: '上，上面嘅上' },
+  { c: '下', e: '⬇️', say: '下，下面嘅下' },
+  { c: '中', e: '🎯', say: '中，中間嘅中' },
+  { c: '左', e: '⬅️', say: '左，左手嘅左' },
+  { c: '右', e: '➡️', say: '右，右手嘅右' },
+  { c: '出', e: '📤', say: '出，出去嘅出' },
+  { c: '入', e: '📥', say: '入，入去嘅入' },
+  { c: '開', e: '🔓', say: '開，開門嘅開' },
+  { c: '關', e: '🔒', say: '關，關門嘅關' },
+  ], words: [
+  { c: '左手', e: '🤚' },
+  { c: '右手', e: '✋' },
+  { c: '下雨', e: '☔' },
+  { c: '上山', e: '🧗' },
+  { c: '開心', e: '😊' },
+  { c: '開門', e: '🔑' },
+  ] },
+  { name: '食嘢', chars: [
+  { c: '果', e: '🍎', say: '果，水果嘅果' },
+  { c: '菜', e: '🥬', say: '菜，青菜嘅菜' },
+  { c: '飯', e: '🍛', say: '飯，食飯嘅飯' },
+  { c: '蛋', e: '🥚', say: '蛋，雞蛋嘅蛋' },
+  { c: '茶', e: '🍵', say: '茶，飲茶嘅茶' },
+  { c: '奶', e: '🥛', say: '奶，牛奶嘅奶' },
+  { c: '肉', e: '🍖', say: '肉，豬肉嘅肉' },
+  { c: '麵', e: '🍜', say: '麵，食麵嘅麵' },
+  ], words: [
+  { c: '牛奶', e: '🥛' },
+  { c: '雞蛋', e: '🥚' },
+  { c: '水果', e: '🍎' },
+  { c: '白飯', e: '🍚' },
+  { c: '牛肉', e: '🥩' },
+  { c: '白菜', e: '🥬' },
+  { c: '火雞', e: '🦃' },
+  ] },
+  { name: '做嘢', chars: [
+  { c: '食', e: '😋', say: '食，食飯嘅食' },
+  { c: '飲', e: '🥤', say: '飲，飲水嘅飲' },
+  { c: '睇', e: '👀', say: '睇，睇書嘅睇' },
+  { c: '聽', e: '🎧', say: '聽，聽歌嘅聽' },
+  { c: '講', e: '🗣️', say: '講，講故事嘅講' },
+  { c: '唱', e: '🎤', say: '唱，唱歌嘅唱' },
+  { c: '歌', e: '🎵', say: '歌，唱歌嘅歌' },
+  { c: '行', e: '🚶', say: '行，行路嘅行' },
+  { c: '走', e: '🏃', say: '走，走嚟走去嘅走' },
+  { c: '坐', e: '🪑', say: '坐，坐低嘅坐' },
+  { c: '玩', e: '🧸', say: '玩，玩具嘅玩' },
+  { c: '笑', e: '😄', say: '笑，大笑嘅笑' },
+  ], words: [
+  { c: '食飯', e: '🍽️' },
+  { c: '食麵', e: '🍜' },
+  { c: '飲水', e: '🚰' },
+  { c: '飲茶', e: '🫖' },
+  { c: '唱歌', e: '🎤' },
+  { c: '聽歌', e: '🎧' },
+  { c: '大笑', e: '😆' },
+  { c: '行山', e: '🥾' },
+  ] },
+  { name: '返學', chars: [
+  { c: '書', e: '📚', say: '書，睇書嘅書' },
+  { c: '筆', e: '✏️', say: '筆，鉛筆嘅筆' },
+  { c: '紙', e: '📄', say: '紙，畫紙嘅紙' },
+  { c: '字', e: '🔤', say: '字，寫字嘅字' },
+  { c: '文', e: '📝', say: '文，中文嘅文' },
+  { c: '學', e: '🎒', say: '學，學校嘅學' },
+  { c: '校', e: '🏫', say: '校，學校嘅校' },
+  { c: '畫', e: '🎨', say: '畫，畫畫嘅畫' },
+  { c: '車', e: '🚗', say: '車，坐車嘅車' },
+  { c: '衣', e: '👕', say: '衣，衣服嘅衣' },
+  { c: '鞋', e: '👟', say: '鞋，波鞋嘅鞋' },
+  { c: '球', e: '⚽', say: '球，皮球嘅球' },
+  ], words: [
+  { c: '學校', e: '🏫' },
+  { c: '小學', e: '🎒' },
+  { c: '上學', e: '🚸' },
+  { c: '中文', e: '📝' },
+  { c: '火車', e: '🚂' },
+  { c: '馬車', e: '🐎' },
+  { c: '上車', e: '🚌' },
+  { c: '畫筆', e: '🖌️' },
+  { c: '白紙', e: '📄' },
+  ] },
+  { name: '形容', chars: [
+  { c: '好', e: '👍', say: '好，好人嘅好' },
+  { c: '高', e: '🦒', say: '高，高矮嘅高' },
+  { c: '長', e: '📏', say: '長，長短嘅長' },
+  { c: '多', e: '🍇', say: '多，多少嘅多' },
+  { c: '少', e: '🤏', say: '少，多少嘅少' },
+  { c: '新', e: '✨', say: '新，新舊嘅新' },
+  { c: '年', e: '🧧', say: '年，新年嘅年' },
+  { c: '老', e: '👴', say: '老，老人嘅老' },
+  { c: '冷', e: '🥶', say: '冷，冷氣嘅冷' },
+  { c: '熱', e: '🥵', say: '熱，熱水嘅熱' },
+  { c: '早', e: '🌅', say: '早，早晨嘅早' },
+  { c: '晚', e: '🌃', say: '晚，晚安嘅晚' },
+  ], words: [
+  { c: '你好', e: '👋' },
+  { c: '老虎', e: '🐯' },
+  { c: '新年', e: '🧧' },
+  { c: '早上', e: '🌄' },
+  { c: '晚上', e: '🌙' },
+  { c: '熱水', e: '♨️' },
+  { c: '冷水', e: '🧊' },
+  { c: '高山', e: '🏔️' },
+  { c: '好多', e: '🍬' },
+  ] },
 ];
-const STICKERS = ['🦄','🐼','🐶','🐱','🐰','🦊','🐻','🐨','🐯','🦁','🐸','🐵','🐧','🐥','🦋','🐞','🐙','🦖','🐳','🦒','🌈','🍓','🍦','🧁','🍩','🎈','🚀','🌟','🍉','🎀'];
+// 全部字同詞語，按學習次序排
+const ITEMS = LEVELS.flatMap((L, lv) => [...L.chars, ...L.words].map(x => ({ ...x, lv, say: x.say || x.c })));
+const isWord = x => x.c.length > 1;
+const STICKERS = ['🦄','🐼','🐶','🐱','🐰','🦊','🐻','🐨','🐯','🦁','🐸','🐵','🐧','🐥','🦋','🐞','🐙','🦖','🐳','🦒','🌈','🍓','🍦','🧁','🍩','🎈','🚀','🌟','🍉','🎀','🐬','🦩','🐢','🦔','🍒','🍭','🪁','🎠','🚂','🏰','🌻','🍀','🐝','🦕','🪐'];
 const PRAISE = ['好叻呀！', '啱喇！', '好嘢！', '叻叻豬！', '答啱咗！'];
 const NEW_PER_SESSION = 3;
 const MAX_REVIEWS = 6;
@@ -297,7 +515,7 @@ function saveState() {
   try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); } catch (e) {}
 }
 let state = loadState();
-const byChar = Object.fromEntries(CHARS.map(x => [x.c, x]));
+const byChar = Object.fromEntries(ITEMS.map(x => [x.c, x]));
 
 // ---------- 聲音 ----------
 let voice = null;
@@ -364,11 +582,19 @@ function show(id) {
 }
 document.querySelectorAll('[data-go]').forEach(b => b.addEventListener('click', () => show(b.dataset.go)));
 
-function learnedChars() { return CHARS.filter(x => state.cards[x.c]); }
+function learnedChars() { return ITEMS.filter(x => state.cards[x.c]); }
+// 而家喺邊一關：第一個未學嘅字/詞語所屬嘅關（全部學晒就係 LEVELS.length）
+function currentLevel() {
+  const next = ITEMS.find(x => !state.cards[x.c]);
+  return next ? next.lv : LEVELS.length;
+}
 function renderHome() {
-  const n = learnedChars().length;
-  document.getElementById('home-stats').textContent =
-    n ? `你已經學咗 ${n} 個字，有 ${state.stickers.length} 張貼紙 ⭐` : '撳「開始學字」學第一個字啦！';
+  const learned = learnedChars();
+  const nw = learned.filter(isWord).length, nc = learned.length - nw;
+  const lv = currentLevel();
+  const where = lv < LEVELS.length ? `第 ${lv + 1} 關：${LEVELS[lv].name}` : '全部過晒關 🏆';
+  document.getElementById('home-stats').textContent = !learned.length ? '撳「開始學字」學第一個字啦！'
+    : `${where} · 識 ${nc} 個字${nw ? `、${nw} 個詞語` : ''} · ${state.stickers.length} 張貼紙 ⭐`;
 }
 
 // ---------- 上堂 ----------
@@ -382,7 +608,14 @@ function buildLesson() {
     .sort((a, b) => state.cards[a.c].due - state.cards[b.c].due)
     .slice(0, MAX_REVIEWS);
   const nNew = due.length >= MAX_REVIEWS ? 1 : NEW_PER_SESSION;
-  const fresh = CHARS.filter(x => !state.cards[x.c]).slice(0, nNew);
+  // 按次序揀新字；詞語要入面每個字都學過（或者今堂先學）先揀
+  const fresh = [];
+  for (const x of ITEMS) {
+    if (fresh.length >= nNew) break;
+    if (state.cards[x.c]) continue;
+    if (isWord(x) && ![...x.c].every(c => state.cards[c] || fresh.some(f => f.c === c))) continue;
+    fresh.push(x);
+  }
   // 冇新字又冇要溫嘅字：溫最弱嗰幾個
   let review = due;
   if (!fresh.length && !due.length) {
@@ -394,7 +627,7 @@ function buildLesson() {
   const quiz = shuffle([...review, ...fresh]).map(x => ({ type: 'quiz', ch: x }));
   quiz.push(...shuffle(fresh).map(x => ({ type: 'quiz', ch: x })));
   steps.push(...quiz);
-  return { steps, i: 0, retried: new Set(), introduced: new Set(fresh.map(x => x.c)) };
+  return { steps, i: 0, retried: new Set(), introduced: new Set(fresh.map(x => x.c)), startLevel: currentLevel() };
 }
 
 function startLesson() {
@@ -417,10 +650,10 @@ function nextStep() { lesson.i++; runStep(); }
 function renderIntro(ch) {
   const stage = document.getElementById('stage');
   stage.innerHTML = `
-    <div class="new-badge">新字！</div>
+    <div class="new-badge">${isWord(ch) ? '新詞語！' : '新字！'}</div>
     <button class="intro-card" id="intro-card">
       <div class="intro-emoji">${ch.e}</div>
-      <div class="intro-char">${ch.c}</div>
+      <div class="intro-char${isWord(ch) ? ' word' : ''}">${ch.c}</div>
     </button>
     <div class="prompt">撳個字再聽多次 👆</div>
     <button class="big-btn next-btn">識喇 →</button>`;
@@ -437,14 +670,15 @@ function renderIntro(ch) {
 function renderQuiz(step) {
   const ch = step.ch;
   const known = new Set([...learnedChars().map(x => x.c), ...lesson.introduced]);
-  // 干擾選項：優先用識咗嘅字，唔夠就用其他字
-  let pool = shuffle(CHARS.filter(x => x.c !== ch.c && known.has(x.c)));
-  if (pool.length < 2) pool = pool.concat(shuffle(CHARS.filter(x => x.c !== ch.c && !known.has(x.c))));
+  // 干擾選項：字配字、詞語配詞語；優先用識咗嘅，唔夠就用其他
+  const same = x => x.c !== ch.c && isWord(x) === isWord(ch);
+  let pool = shuffle(ITEMS.filter(x => same(x) && known.has(x.c)));
+  if (pool.length < 2) pool = pool.concat(shuffle(ITEMS.filter(x => same(x) && !known.has(x.c))));
   const options = shuffle([ch, ...pool.slice(0, 2)]);
   const stage = document.getElementById('stage');
   stage.innerHTML = `
-    <div class="prompt"><button class="speak-btn" aria-label="再聽">🔊</button> 邊個係呢個字？</div>
-    <div class="choices">${options.map(o => `<button class="choice" data-c="${o.c}">${o.c}</button>`).join('')}</div>`;
+    <div class="prompt"><button class="speak-btn" aria-label="再聽">🔊</button> 邊個係呢個${isWord(ch) ? '詞語' : '字'}？</div>
+    <div class="choices">${options.map(o => `<button class="choice${isWord(o) ? ' word' : ''}" data-c="${o.c}">${o.c}</button>`).join('')}</div>`;
   stage.querySelector('.speak-btn').onclick = () => speak(ch.say);
   let firstTry = true, done = false;
   stage.querySelectorAll('.choice').forEach(btn => {
@@ -497,15 +731,20 @@ function finishLesson() {
   state.stickers.push(sticker);
   state.sessions++;
   saveState();
+  // 今堂學完一關：特別恭喜
+  const lv = currentLevel();
+  const levelUp = lv > lesson.startLevel;
+  const title = levelUp ? `過咗第 ${lesson.startLevel + 1} 關！🏆` : '好叻呀！🎉';
+  const sayText = levelUp ? `好叻呀！你過咗第${lesson.startLevel + 1}關！你得到一張新貼紙！` : '好叻呀！你得到一張新貼紙！';
   const stage = document.getElementById('stage');
   stage.innerHTML = `
-    <div class="reward-text">好叻呀！🎉</div>
+    <div class="reward-text">${title}</div>
     <div class="reward-sticker">${sticker}</div>
     <div class="prompt">你得到一張新貼紙！</div>
     <button class="big-btn next-btn">返主頁</button>`;
   stage.querySelector('.next-btn').onclick = () => show('home');
   chime(true);
-  speak('好叻呀！你得到一張新貼紙！');
+  speak(sayText);
   confetti();
 }
 function confetti() {
@@ -533,12 +772,25 @@ function renderWords() {
     grid.innerHTML = `<div class="empty-note" style="grid-column:1/-1">仲未學字住，<br>返主頁撳「開始學字」啦！</div>`;
     return;
   }
-  grid.innerHTML = CHARS.map(x => {
+  // 顯示到而家呢一關，之後嘅關收埋
+  const cur = currentLevel();
+  const tile = x => {
     const card = state.cards[x.c];
-    if (!card) return `<div class="tile locked"><div class="han">？</div></div>`;
+    const w = isWord(x) ? ' word' : '';
+    if (!card) return `<div class="tile locked${w}"><div class="han">${isWord(x) ? '？？' : '？'}</div></div>`;
     const stars = card.box >= 4 ? '⭐⭐⭐' : card.box >= 2 ? '⭐⭐' : '⭐';
-    return `<button class="tile" data-c="${x.c}"><span class="stars">${stars}</span><div class="han">${x.c}</div><div class="emo">${x.e}</div></button>`;
-  }).join('');
+    return `<button class="tile${w}" data-c="${x.c}"><span class="stars">${stars}</span><div class="han">${x.c}</div><div class="emo">${x.e}</div></button>`;
+  };
+  let html = '';
+  LEVELS.forEach((L, lv) => {
+    if (lv > cur) return;
+    const items = ITEMS.filter(x => x.lv === lv);
+    const n = items.filter(x => state.cards[x.c]).length;
+    html += `<div class="level-head">第 ${lv + 1} 關：${L.name}<small>${n} / ${items.length}</small></div>` + items.map(tile).join('');
+  });
+  const left = LEVELS.length - cur - 1;
+  if (left > 0) html += `<div class="empty-note" style="grid-column:1/-1;margin-top:2vh">仲有 ${left} 關等緊你！🚀</div>`;
+  grid.innerHTML = html;
   grid.querySelectorAll('[data-c]').forEach(b => b.onclick = () => speak(byChar[b.dataset.c].say));
 }
 function renderStickers() {
@@ -581,8 +833,11 @@ function renderParent() {
     : `⚠️ 搵唔到廣東話聲。iPad 請去「設定 → 輔助使用 → 朗讀內容 → 聲音 → 中文（香港）」下載。`;
   const learned = learnedChars();
   const strong = learned.filter(x => state.cards[x.c].box >= 4).length;
+  const allWords = ITEMS.filter(isWord).length, nw = learned.filter(isWord).length;
+  const lv = currentLevel();
   document.getElementById('parent-summary').innerHTML =
-    `學咗 <b>${learned.length}</b> / ${CHARS.length} 個字，熟練 <b>${strong}</b> 個，上咗 <b>${state.sessions}</b> 堂。`;
+    `學咗 <b>${learned.length - nw}</b> / ${ITEMS.length - allWords} 個字、<b>${nw}</b> / ${allWords} 個詞語，熟練 <b>${strong}</b> 個，上咗 <b>${state.sessions}</b> 堂。` +
+    `<br>而家喺 ${lv < LEVELS.length ? `第 <b>${lv + 1}</b> / ${LEVELS.length} 關（${LEVELS[lv].name}）` : '最後一關之後 🏆'}。`;
   const fmt = t => t <= Date.now() ? '今日' : new Date(t).toLocaleDateString('zh-HK', { month: 'numeric', day: 'numeric' });
   document.getElementById('parent-table').innerHTML =
     `<tr><th>字</th><th>程度</th><th>答啱</th><th>答錯</th><th>下次溫</th></tr>` +
