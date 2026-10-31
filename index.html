@@ -171,7 +171,144 @@
   td.han { font-family: var(--learn); font-size: 32px; }
   .small-btn { font-size: 18px; padding: 12px 22px; border-radius: 99px; background: var(--blue); margin: 4px 8px 4px 0; }
   .small-btn.danger { background: var(--pink); color: var(--pink-ink); }
+  .small-btn.on { outline: 3px solid var(--teal); }
+  .xp, .particle { display: none; }
+
+  /* ===== 方塊世界主題（html[data-theme="block"]）：像素材質、硬邊角、立體斜面；字型照用芫荽 ===== */
+  html[data-theme="block"] {
+    --noise: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' shape-rendering='crispEdges'%3E%3Crect x='1' y='0' width='1' height='1' fill='black' fill-opacity='.14'/%3E%3Crect x='3' y='0' width='1' height='1' fill='black' fill-opacity='.14'/%3E%3Crect x='6' y='0' width='1' height='1' fill='black' fill-opacity='.14'/%3E%3Crect x='8' y='0' width='1' height='1' fill='black' fill-opacity='.14'/%3E%3Crect x='10' y='0' width='1' height='1' fill='black' fill-opacity='.14'/%3E%3Crect x='11' y='0' width='1' height='1' fill='black' fill-opacity='.14'/%3E%3Crect x='14' y='0' width='1' height='1' fill='black' fill-opacity='.14'/%3E%3Crect x='15' y='0' width='1' height='1' fill='white' fill-opacity='.12'/%3E%3Crect x='5' y='1' width='1' height='1' fill='black' fill-opacity='.14'/%3E%3Crect x='7' y='1' width='1' height='1' fill='white' fill-opacity='.12'/%3E%3Crect x='8' y='1' width='1' height='1' fill='black' fill-opacity='.14'/%3E%3Crect x='9' y='1' width='1' height='1' fill='black' fill-opacity='.14'/%3E%3Crect x='12' y='1' width='1' height='1' fill='white' fill-opacity='.12'/%3E%3Crect x='1' y='2' width='1' height='1' fill='black' fill-opacity='.14'/%3E%3Crect x='2' y='2' width='1' height='1' fill='black' fill-opacity='.14'/%3E%3Crect x='3' y='2' width='1' height='1' fill='white' fill-opacity='.12'/%3E%3Crect x='9' y='2' width='1' height='1' fill='white' fill-opacity='.12'/%3E%3Crect x='12' y='2' width='1' height='1' fill='white' fill-opacity='.12'/%3E%3Crect x='1' y='3' width='1' height='1' fill='white' fill-opacity='.12'/%3E%3Crect x='3' y='3' width='1' height='1' fill='black' fill-opacity='.14'/%3E%3Crect x='6' y='3' width='1' height='1' fill='black' fill-opacity='.14'/%3E%3Crect x='8' y='3' width='1' height='1' fill='black' fill-opacity='.14'/%3E%3Crect x='6' y='4' width='1' height='1' fill='black' fill-opacity='.14'/%3E%3Crect x='11' y='4' width='1' height='1' fill='white' fill-opacity='.12'/%3E%3Crect x='14' y='4' width='1' height='1' fill='black' fill-opacity='.14'/%3E%3Crect x='0' y='5' width='1' height='1' fill='black' fill-opacity='.14'/%3E%3Crect x='1' y='5' width='1' height='1' fill='black' fill-opacity='.14'/%3E%3Crect x='2' y='5' width='1' height='1' fill='black' fill-opacity='.14'/%3E%3Crect x='4' y='5' width='1' height='1' fill='black' fill-opacity='.14'/%3E%3Crect x='5' y='5' width='1' height='1' fill='white' fill-opacity='.12'/%3E%3Crect x='8' y='5' width='1' height='1' fill='black' fill-opacity='.14'/%3E%3Crect x='14' y='5' width='1' height='1' fill='white' fill-opacity='.12'/%3E%3Crect x='3' y='6' width='1' height='1' fill='black' fill-opacity='.14'/%3E%3Crect x='4' y='6' width='1' height='1' fill='black' fill-opacity='.14'/%3E%3Crect x='5' y='6' width='1' height='1' fill='white' fill-opacity='.12'/%3E%3Crect x='6' y='6' width='1' height='1' fill='white' fill-opacity='.12'/%3E%3Crect x='9' y='6' width='1' height='1' fill='white' fill-opacity='.12'/%3E%3Crect x='10' y='6' width='1' height='1' fill='black' fill-opacity='.14'/%3E%3Crect x='3' y='7' width='1' height='1' fill='black' fill-opacity='.14'/%3E%3Crect x='10' y='7' width='1' height='1' fill='black' fill-opacity='.14'/%3E%3Crect x='12' y='7' width='1' height='1' fill='black' fill-opacity='.14'/%3E%3Crect x='13' y='7' width='1' height='1' fill='black' fill-opacity='.14'/%3E%3Crect x='14' y='7' width='1' height='1' fill='white' fill-opacity='.12'/%3E%3Crect x='15' y='7' width='1' height='1' fill='black' fill-opacity='.14'/%3E%3Crect x='1' y='8' width='1' height='1' fill='black' fill-opacity='.14'/%3E%3Crect x='2' y='8' width='1' height='1' fill='black' fill-opacity='.14'/%3E%3Crect x='3' y='8' width='1' height='1' fill='black' fill-opacity='.14'/%3E%3Crect x='4' y='8' width='1' height='1' fill='black' fill-opacity='.14'/%3E%3Crect x='6' y='8' width='1' height='1' fill='black' fill-opacity='.14'/%3E%3Crect x='9' y='8' width='1' height='1' fill='black' fill-opacity='.14'/%3E%3Crect x='10' y='8' width='1' height='1' fill='white' fill-opacity='.12'/%3E%3Crect x='13' y='8' width='1' height='1' fill='black' fill-opacity='.14'/%3E%3Crect x='2' y='9' width='1' height='1' fill='black' fill-opacity='.14'/%3E%3Crect x='3' y='9' width='1' height='1' fill='black' fill-opacity='.14'/%3E%3Crect x='5' y='9' width='1' height='1' fill='white' fill-opacity='.12'/%3E%3Crect x='7' y='9' width='1' height='1' fill='black' fill-opacity='.14'/%3E%3Crect x='8' y='9' width='1' height='1' fill='black' fill-opacity='.14'/%3E%3Crect x='11' y='9' width='1' height='1' fill='black' fill-opacity='.14'/%3E%3Crect x='13' y='9' width='1' height='1' fill='black' fill-opacity='.14'/%3E%3Crect x='2' y='10' width='1' height='1' fill='white' fill-opacity='.12'/%3E%3Crect x='4' y='10' width='1' height='1' fill='black' fill-opacity='.14'/%3E%3Crect x='9' y='10' width='1' height='1' fill='white' fill-opacity='.12'/%3E%3Crect x='0' y='11' width='1' height='1' fill='white' fill-opacity='.12'/%3E%3Crect x='3' y='11' width='1' height='1' fill='black' fill-opacity='.14'/%3E%3Crect x='4' y='11' width='1' height='1' fill='black' fill-opacity='.14'/%3E%3Crect x='5' y='11' width='1' height='1' fill='white' fill-opacity='.12'/%3E%3Crect x='6' y='11' width='1' height='1' fill='white' fill-opacity='.12'/%3E%3Crect x='14' y='11' width='1' height='1' fill='white' fill-opacity='.12'/%3E%3Crect x='15' y='11' width='1' height='1' fill='white' fill-opacity='.12'/%3E%3Crect x='0' y='12' width='1' height='1' fill='white' fill-opacity='.12'/%3E%3Crect x='1' y='12' width='1' height='1' fill='white' fill-opacity='.12'/%3E%3Crect x='8' y='12' width='1' height='1' fill='black' fill-opacity='.14'/%3E%3Crect x='14' y='12' width='1' height='1' fill='black' fill-opacity='.14'/%3E%3Crect x='7' y='13' width='1' height='1' fill='black' fill-opacity='.14'/%3E%3Crect x='8' y='13' width='1' height='1' fill='black' fill-opacity='.14'/%3E%3Crect x='9' y='13' width='1' height='1' fill='black' fill-opacity='.14'/%3E%3Crect x='12' y='13' width='1' height='1' fill='black' fill-opacity='.14'/%3E%3Crect x='2' y='14' width='1' height='1' fill='black' fill-opacity='.14'/%3E%3Crect x='3' y='14' width='1' height='1' fill='black' fill-opacity='.14'/%3E%3Crect x='11' y='14' width='1' height='1' fill='white' fill-opacity='.12'/%3E%3Crect x='12' y='14' width='1' height='1' fill='white' fill-opacity='.12'/%3E%3Crect x='13' y='14' width='1' height='1' fill='white' fill-opacity='.12'/%3E%3Crect x='14' y='14' width='1' height='1' fill='white' fill-opacity='.12'/%3E%3Crect x='0' y='15' width='1' height='1' fill='white' fill-opacity='.12'/%3E%3Crect x='2' y='15' width='1' height='1' fill='black' fill-opacity='.14'/%3E%3Crect x='13' y='15' width='1' height='1' fill='black' fill-opacity='.14'/%3E%3Crect x='15' y='15' width='1' height='1' fill='white' fill-opacity='.12'/%3E%3C/svg%3E");
+    --ore-diamond: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' shape-rendering='crispEdges'%3E%3Crect x='2' y='2' width='2' height='2' fill='%237ff3f0'/%3E%3Crect x='3' y='3' width='1' height='1' fill='%231a9ea6'/%3E%3Crect x='4' y='2' width='1' height='1' fill='%231a9ea6'/%3E%3Crect x='10' y='3' width='2' height='2' fill='%237ff3f0'/%3E%3Crect x='11' y='4' width='1' height='1' fill='%231a9ea6'/%3E%3Crect x='12' y='3' width='1' height='1' fill='%231a9ea6'/%3E%3Crect x='5' y='8' width='2' height='2' fill='%237ff3f0'/%3E%3Crect x='6' y='9' width='1' height='1' fill='%231a9ea6'/%3E%3Crect x='7' y='8' width='1' height='1' fill='%231a9ea6'/%3E%3Crect x='12' y='10' width='2' height='2' fill='%237ff3f0'/%3E%3Crect x='13' y='11' width='1' height='1' fill='%231a9ea6'/%3E%3Crect x='14' y='10' width='1' height='1' fill='%231a9ea6'/%3E%3Crect x='3' y='12' width='2' height='2' fill='%237ff3f0'/%3E%3Crect x='4' y='13' width='1' height='1' fill='%231a9ea6'/%3E%3Crect x='5' y='12' width='1' height='1' fill='%231a9ea6'/%3E%3Crect x='9' y='13' width='2' height='2' fill='%237ff3f0'/%3E%3Crect x='10' y='14' width='1' height='1' fill='%231a9ea6'/%3E%3Crect x='11' y='13' width='1' height='1' fill='%231a9ea6'/%3E%3C/svg%3E");
+    --ore-gold: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' shape-rendering='crispEdges'%3E%3Crect x='2' y='2' width='2' height='2' fill='%23fcee4b'/%3E%3Crect x='3' y='3' width='1' height='1' fill='%23c48a10'/%3E%3Crect x='4' y='2' width='1' height='1' fill='%23c48a10'/%3E%3Crect x='10' y='3' width='2' height='2' fill='%23fcee4b'/%3E%3Crect x='11' y='4' width='1' height='1' fill='%23c48a10'/%3E%3Crect x='12' y='3' width='1' height='1' fill='%23c48a10'/%3E%3Crect x='5' y='8' width='2' height='2' fill='%23fcee4b'/%3E%3Crect x='6' y='9' width='1' height='1' fill='%23c48a10'/%3E%3Crect x='7' y='8' width='1' height='1' fill='%23c48a10'/%3E%3Crect x='12' y='10' width='2' height='2' fill='%23fcee4b'/%3E%3Crect x='13' y='11' width='1' height='1' fill='%23c48a10'/%3E%3Crect x='14' y='10' width='1' height='1' fill='%23c48a10'/%3E%3Crect x='3' y='12' width='2' height='2' fill='%23fcee4b'/%3E%3Crect x='4' y='13' width='1' height='1' fill='%23c48a10'/%3E%3Crect x='5' y='12' width='1' height='1' fill='%23c48a10'/%3E%3Crect x='9' y='13' width='2' height='2' fill='%23fcee4b'/%3E%3Crect x='10' y='14' width='1' height='1' fill='%23c48a10'/%3E%3Crect x='11' y='13' width='1' height='1' fill='%23c48a10'/%3E%3C/svg%3E");
+    --gem: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 7' shape-rendering='crispEdges'%3E%3Crect x='2' y='0' width='1' height='1' fill='%230b4f55'/%3E%3Crect x='3' y='0' width='1' height='1' fill='%230b4f55'/%3E%3Crect x='4' y='0' width='1' height='1' fill='%230b4f55'/%3E%3Crect x='5' y='0' width='1' height='1' fill='%230b4f55'/%3E%3Crect x='1' y='1' width='1' height='1' fill='%230b4f55'/%3E%3Crect x='2' y='1' width='1' height='1' fill='%23d6fffd'/%3E%3Crect x='3' y='1' width='1' height='1' fill='%23d6fffd'/%3E%3Crect x='4' y='1' width='1' height='1' fill='%234ee0dc'/%3E%3Crect x='5' y='1' width='1' height='1' fill='%234ee0dc'/%3E%3Crect x='6' y='1' width='1' height='1' fill='%230b4f55'/%3E%3Crect x='0' y='2' width='1' height='1' fill='%230b4f55'/%3E%3Crect x='1' y='2' width='1' height='1' fill='%23d6fffd'/%3E%3Crect x='2' y='2' width='1' height='1' fill='%23d6fffd'/%3E%3Crect x='3' y='2' width='1' height='1' fill='%234ee0dc'/%3E%3Crect x='4' y='2' width='1' height='1' fill='%234ee0dc'/%3E%3Crect x='5' y='2' width='1' height='1' fill='%234ee0dc'/%3E%3Crect x='6' y='2' width='1' height='1' fill='%234ee0dc'/%3E%3Crect x='7' y='2' width='1' height='1' fill='%230b4f55'/%3E%3Crect x='0' y='3' width='1' height='1' fill='%230b4f55'/%3E%3Crect x='1' y='3' width='1' height='1' fill='%234ee0dc'/%3E%3Crect x='2' y='3' width='1' height='1' fill='%234ee0dc'/%3E%3Crect x='3' y='3' width='1' height='1' fill='%234ee0dc'/%3E%3Crect x='4' y='3' width='1' height='1' fill='%234ee0dc'/%3E%3Crect x='5' y='3' width='1' height='1' fill='%234ee0dc'/%3E%3Crect x='6' y='3' width='1' height='1' fill='%2322a9b0'/%3E%3Crect x='7' y='3' width='1' height='1' fill='%230b4f55'/%3E%3Crect x='1' y='4' width='1' height='1' fill='%230b4f55'/%3E%3Crect x='2' y='4' width='1' height='1' fill='%234ee0dc'/%3E%3Crect x='3' y='4' width='1' height='1' fill='%234ee0dc'/%3E%3Crect x='4' y='4' width='1' height='1' fill='%234ee0dc'/%3E%3Crect x='5' y='4' width='1' height='1' fill='%2322a9b0'/%3E%3Crect x='6' y='4' width='1' height='1' fill='%230b4f55'/%3E%3Crect x='2' y='5' width='1' height='1' fill='%230b4f55'/%3E%3Crect x='3' y='5' width='1' height='1' fill='%234ee0dc'/%3E%3Crect x='4' y='5' width='1' height='1' fill='%2322a9b0'/%3E%3Crect x='5' y='5' width='1' height='1' fill='%230b4f55'/%3E%3Crect x='3' y='6' width='1' height='1' fill='%230b4f55'/%3E%3Crect x='4' y='6' width='1' height='1' fill='%230b4f55'/%3E%3C/svg%3E");
+    --bg: #8ec9f5;
+    --card: #c6c6c6;
+    --ink: #333;
+    --muted: #4a4a4a;
+    --teal: #fff;
+    --line: #8b8b8b;
+    --shadow: none;
+    --outline: #1b1b1b;
+    --grass-top: #79c05a; --grass: #5d9b3a; --dirt: #866043; --stone: #8b8b8b;
+    --plank: #b8945f; --leaf: #3f7d24; --amethyst: #8a5cc4; --gold: #f7d23e;
+    --xp: #80ff20;
+    /* 淺灰介面板：黑邊 + 左上白、右下深灰 */
+    --gui: 0 0 0 4px var(--outline), inset 4px 4px 0 #fff, inset -4px -4px 0 #555;
+    /* 有色掣：同上但半透明，咩底色都啱 */
+    --bevel: 0 0 0 4px var(--outline), inset 4px 4px 0 rgba(255,255,255,.4), inset -4px -6px 0 rgba(0,0,0,.35);
+    --pressed: 0 0 0 4px var(--outline), inset 4px 6px 0 rgba(0,0,0,.35), inset -4px -4px 0 rgba(255,255,255,.25);
+    --shade: 2px 2px 0 rgba(0,0,0,.45);
+    --planks: repeating-linear-gradient(transparent 0 14px, rgba(0,0,0,.22) 14px 16px);
+  }
+  [data-theme="block"] body { background: linear-gradient(#6fb6f0, #b9e1ff 75%) fixed; image-rendering: pixelated; }
+  [data-theme="block"] button:active { transform: translateY(3px); }
+
+  /* 掣 */
+  [data-theme="block"] .big-btn, [data-theme="block"] .icon-btn, [data-theme="block"] .speak-btn,
+  [data-theme="block"] .small-btn, [data-theme="block"] .new-badge {
+    border-radius: 0; color: #fff; text-shadow: var(--shade); box-shadow: var(--bevel);
+    background: var(--noise), var(--c, var(--stone)); background-size: 64px;
+  }
+  [data-theme="block"] .big-btn:active, [data-theme="block"] .icon-btn:active,
+  [data-theme="block"] .speak-btn:active, [data-theme="block"] .small-btn:active { box-shadow: var(--pressed); }
+  [data-theme="block"] .big-btn { --c: var(--grass); }
+  [data-theme="block"] .big-btn.blue { --c: var(--plank); background: var(--planks), var(--noise), var(--c); background-size: auto, 64px; }
+  [data-theme="block"] .big-btn.purple { --c: var(--amethyst); }
+  [data-theme="block"] .small-btn { --c: var(--stone); }
+  [data-theme="block"] .small-btn.danger { --c: #b33a2c; color: #fff; }
+  [data-theme="block"] .small-btn.on { outline: none; --c: var(--grass); box-shadow: var(--pressed); }
+  [data-theme="block"] .speak-btn { --c: var(--dirt); }
+  [data-theme="block"] .new-badge { --c: var(--gold); color: #5a4300; text-shadow: 1px 1px 0 rgba(255,255,255,.5); }
+  [data-theme="block"] .parent-btn .ring { border-radius: 0; border-color: var(--xp); }
+
+  /* 介面板 */
+  [data-theme="block"] .intro-card, [data-theme="block"] .choice, [data-theme="block"] .tile,
+  [data-theme="block"] .panel, [data-theme="block"] .reward-sticker, [data-theme="block"] .parent-hint {
+    border-radius: 0; background: var(--card); box-shadow: var(--gui);
+  }
+  [data-theme="block"] .choice.right { background: var(--noise), var(--grass); background-size: 64px; color: #fff; text-shadow: 4px 4px 0 rgba(0,0,0,.3); box-shadow: var(--bevel); }
+  [data-theme="block"] .choice.wrong { background: #8b8b8b; color: #a9a9a9; box-shadow: var(--pressed); }
+  [data-theme="block"] .tile.locked { background: var(--noise), #6b6b6b; background-size: 64px; color: #8f8f8f; box-shadow: 0 0 0 4px var(--outline); }
+  [data-theme="block"] .reward-sticker { padding: 5vh; }
+  [data-theme="block"] .panel h3 { color: #333; }
+  [data-theme="block"] td, [data-theme="block"] th { border-bottom-width: 2px; }
+
+  /* 天空上面嘅字：白字黑影 */
+  [data-theme="block"] .title { color: #fff; text-shadow: 5px 5px 0 #3f3f3f; margin-bottom: 0; }
+  [data-theme="block"] .page-title, [data-theme="block"] .reward-text, [data-theme="block"] .level-head,
+  [data-theme="block"] .prompt, [data-theme="block"] .empty-note { color: #fff; text-shadow: 3px 3px 0 rgba(0,0,0,.4); }
+  [data-theme="block"] .level-head small { color: #fff; }
+  /* 黃色斜字標語 */
+  [data-theme="block"] .subtitle {
+    color: #ffff55; text-shadow: 3px 3px 0 #3f3f00; font-size: 28px;
+    margin: -1vh 0 3vh 22vw; animation: splash .5s ease-in-out infinite alternate;
+  }
+  @keyframes splash { from { transform: rotate(-12deg) scale(1); } to { transform: rotate(-12deg) scale(1.08); } }
+  [data-theme="block"] .home-stats { background: rgba(0,0,0,.5); color: #fff; border-radius: 0; margin-top: 3vh; }
+
+  /* 經驗值條 */
+  [data-theme="block"] .xp { display: flex; flex-direction: column; align-items: center; width: min(500px, 90vw); margin-bottom: 4vh; }
+  .xp-lv { font-size: 44px; line-height: 1; color: var(--xp); text-shadow: 3px 3px 0 #1b3a00; margin-bottom: 6px; }
+  .xp-bar, [data-theme="block"] .progress {
+    position: relative; width: 100%; height: 20px; background: #1b1b1b; border-radius: 0; box-shadow: 0 0 0 3px var(--outline);
+  }
+  [data-theme="block"] .progress { flex: 1; width: auto; }
+  .xp-bar > div, [data-theme="block"] .progress > div {
+    height: 100%; width: 0; border-radius: 0; transition: width .6s steps(10);
+    background: linear-gradient(#c6ff7a 0 30%, #69d61e 30% 75%, #3f9c0a 75%);
+  }
+  /* 分格 */
+  .xp-bar::after, [data-theme="block"] .progress::after {
+    content: ''; position: absolute; inset: 0; pointer-events: none;
+    background: repeating-linear-gradient(to right, transparent 0 calc(10% - 3px), #1b1b1b calc(10% - 3px) 10%);
+  }
+
+  /* 主頁背景：雲、浮吓浮吓嘅方塊、草地 */
+  [data-theme="block"] .deco i {
+    width: 64px; height: 64px; border: 0; border-radius: 0; opacity: 1; --r: 0deg !important;
+    box-shadow: 0 0 0 3px rgba(0,0,0,.3); animation-timing-function: steps(5);
+    background: var(--noise), var(--stone) !important; background-size: 64px !important;
+  }
+  [data-theme="block"] .deco i:nth-child(1), [data-theme="block"] .deco i:nth-child(8) { background: var(--noise), linear-gradient(var(--grass-top) 0 22%, var(--dirt) 22%) !important; }
+  [data-theme="block"] .deco i:nth-child(2) { background: var(--noise), var(--leaf) !important; }
+  [data-theme="block"] .deco i:nth-child(3) { background: var(--ore-diamond), var(--noise), var(--stone) !important; }
+  [data-theme="block"] .deco i:nth-child(4) { background: var(--planks), var(--noise), var(--plank) !important; background-size: auto, 64px !important; }
+  [data-theme="block"] .deco i:nth-child(5) { background: var(--noise), var(--dirt) !important; }
+  [data-theme="block"] .deco i:nth-child(7) { background: var(--ore-gold), var(--noise), var(--stone) !important; }
+  [data-theme="block"] .deco::before {
+    content: ''; position: absolute; top: 3%; left: -300px; width: 128px; height: 32px; background: #fff; opacity: .9;
+    box-shadow: 32px -16px 0 #fff, 520px 330px 0 #fff, 560px 306px 0 #fff;
+    animation: drift 70s linear infinite;
+  }
+  @keyframes drift { to { transform: translateX(calc(100vw + 400px)); } }
+  [data-theme="block"] .deco::after {
+    content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: calc(72px + env(safe-area-inset-bottom));
+    background: var(--noise), linear-gradient(var(--grass-top) 0 14px, var(--grass) 14px 22px, var(--dirt) 22px);
+    background-size: 64px, auto;
+  }
+
+  /* 貼紙簿 → 物品欄 */
+  [data-theme="block"] #sticker-grid {
+    flex: 0 1 auto; width: min(900px, 100%); margin-top: 24px; padding: 16px;
+    grid-template-columns: repeat(9, 1fr); gap: 4px; background: var(--card); box-shadow: var(--gui);
+  }
+  [data-theme="block"] .tile.sticker {
+    font-size: clamp(26px, 5.5vw, 56px); background: #8b8b8b;
+    box-shadow: inset 3px 3px 0 #373737, inset -3px -3px 0 #fff;
+  }
+  [data-theme="block"] .grid { padding: 24px 8px; }
+
+  /* 鑽石（代替星星）、方塊碎片 */
+  .gem { display: inline-block; width: 16px; height: 14px; margin-left: 2px; background: var(--gem) center / contain no-repeat; }
+  [data-theme="block"] .particle { display: block; position: fixed; pointer-events: none; z-index: 10; box-shadow: inset -2px -2px 0 rgba(0,0,0,.3); }
 </style>
+<script>
+  // 主題喺畫面出現之前設定，唔會閃；?theme=block 可以直接預覽
+  try {
+    const q = new URLSearchParams(location.search).get('theme');
+    if (q !== null) localStorage.setItem('jcl-theme', q);
+    document.documentElement.dataset.theme = localStorage.getItem('jcl-theme') || '';
+  } catch (e) {}
+</script>
 </head>
 <body>
 
@@ -189,6 +326,10 @@
   </div>
   <div class="title">學字樂園</div>
   <div class="subtitle">一齊嚟學中文字！</div>
+  <div class="xp" aria-hidden="true">
+    <div class="xp-lv" id="xp-lv"></div>
+    <div class="xp-bar"><div id="xp-fill"></div></div>
+  </div>
   <div class="menu">
     <button class="big-btn" id="start-btn">▶ 開始學字</button>
     <button class="big-btn blue" data-go="words">📖 我識嘅字</button>
@@ -245,6 +386,11 @@
     <h3>📊 學習進度</h3>
     <div id="parent-summary"></div>
     <table id="parent-table"></table>
+  </div>
+  <div class="panel">
+    <h3>🎨 外觀</h3>
+    <button class="small-btn" data-pick-theme="">原本</button>
+    <button class="small-btn" data-pick-theme="block">🧱 方塊世界</button>
   </div>
   <div class="panel">
     <h3>⚙️ 其他</h3>
@@ -554,21 +700,51 @@ function unlockAudio() {
   } catch (e) {}
 }
 let audioCtx = null;
-function chime(good) {
+// 方塊世界用 8-bit 方波，聲細啲
+function chime(good, notes = good ? [660, 880, 1320] : [300, 240], gap = 0.12) {
   try {
     audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
-    const notes = good ? [660, 880, 1320] : [300, 240];
+    const block = isBlock();
     notes.forEach((f, i) => {
       const o = audioCtx.createOscillator(), g = audioCtx.createGain();
-      o.type = 'sine'; o.frequency.value = f;
-      const t = audioCtx.currentTime + i * 0.12;
+      o.type = block ? 'square' : 'sine'; o.frequency.value = f;
+      const t = audioCtx.currentTime + i * gap;
       g.gain.setValueAtTime(0.0001, t);
-      g.gain.exponentialRampToValueAtTime(0.25, t + 0.02);
+      g.gain.exponentialRampToValueAtTime(block ? 0.08 : 0.25, t + 0.02);
       g.gain.exponentialRampToValueAtTime(0.0001, t + 0.3);
       o.connect(g).connect(audioCtx.destination);
       o.start(t); o.stop(t + 0.32);
     });
   } catch (e) {}
+}
+
+// ---------- 主題 ----------
+const isBlock = () => document.documentElement.dataset.theme === 'block';
+function setTheme(t) {
+  document.documentElement.dataset.theme = t;
+  try { localStorage.setItem('jcl-theme', t); } catch (e) {}
+  document.querySelector('meta[name="theme-color"]').content = t === 'block' ? '#6fb6f0' : '#eeedeb';
+  document.querySelectorAll('[data-pick-theme]').forEach(b => b.classList.toggle('on', b.dataset.pickTheme === t));
+}
+document.querySelectorAll('[data-pick-theme]').forEach(b => b.addEventListener('click', () => setTheme(b.dataset.pickTheme)));
+setTheme(document.documentElement.dataset.theme || '');
+// 答啱嗰陣由個掣爆出方塊碎片
+function burst(el, colors) {
+  const r = el.getBoundingClientRect();
+  for (let i = 0; i < 20; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    const s = 8 + Math.floor(Math.random() * 4) * 4;
+    Object.assign(p.style, { width: s + 'px', height: s + 'px', background: colors[i % colors.length],
+      left: r.left + r.width / 2 - s / 2 + 'px', top: r.top + r.height / 2 - s / 2 + 'px' });
+    document.body.appendChild(p);
+    const a = Math.random() * Math.PI * 2, d = 60 + Math.random() * 140;
+    p.animate([
+      { transform: 'translate(0, 0)', opacity: 1 },
+      { transform: `translate(${Math.cos(a) * d}px, ${Math.sin(a) * d - 60}px)`, opacity: 1, offset: .5 },
+      { transform: `translate(${Math.cos(a) * d * 1.3}px, ${Math.sin(a) * d + 160}px)`, opacity: 0 },
+    ], { duration: 900 + Math.random() * 300, easing: 'ease-out', fill: 'forwards' }).onfinish = () => p.remove();
+  }
 }
 
 // ---------- 畫面切換 ----------
@@ -594,7 +770,12 @@ function renderHome() {
   const lv = currentLevel();
   const where = lv < LEVELS.length ? `第 ${lv + 1} 關：${LEVELS[lv].name}` : '全部過晒關 🏆';
   document.getElementById('home-stats').textContent = !learned.length ? '撳「開始學字」學第一個字啦！'
-    : `${where} · 識 ${nc} 個字${nw ? `、${nw} 個詞語` : ''} · ${state.stickers.length} 張貼紙 ⭐`;
+    : `${where} · 識 ${nc} 個字${nw ? `、${nw} 個詞語` : ''} · ${state.stickers.length} 張貼紙 ${isBlock() ? '💎' : '⭐'}`;
+  // 經驗值：而家呢關學咗幾多
+  const items = ITEMS.filter(x => x.lv === lv);
+  const frac = items.length ? items.filter(x => state.cards[x.c]).length / items.length : 1;
+  document.getElementById('xp-lv').textContent = Math.min(lv + 1, LEVELS.length);
+  document.getElementById('xp-fill').style.width = `${frac * 100}%`;
 }
 
 // ---------- 上堂 ----------
@@ -689,6 +870,7 @@ function renderQuiz(step) {
         btn.classList.add('right');
         btn.innerHTML = `${ch.c}`;
         chime(true);
+        if (isBlock()) burst(btn, ['#79c05a', '#5d9b3a', '#866043', '#4ee0dc', '#f7d23e']);
         speak(PRAISE[Math.floor(Math.random() * PRAISE.length)]);
         record(ch.c, firstTry);
         setTimeout(nextStep, 1400);
@@ -743,19 +925,23 @@ function finishLesson() {
     <div class="prompt">你得到一張新貼紙！</div>
     <button class="big-btn next-btn">返主頁</button>`;
   stage.querySelector('.next-btn').onclick = () => show('home');
-  chime(true);
+  // 方塊世界過關：升級音效
+  if (levelUp && isBlock()) chime(true, [523, 659, 784, 1047, 784, 1047, 1319], 0.09);
+  else chime(true);
   speak(sayText);
   confetti();
 }
 function confetti() {
-  const colors = ['#bfe0c9', '#cdc6e6', '#ecc8d0', '#f3e9b3', '#b4d2de'];
+  const block = isBlock();
+  const colors = block ? ['#79c05a', '#866043', '#4ee0dc', '#f7d23e', '#8a5cc4', '#c6c6c6']
+    : ['#bfe0c9', '#cdc6e6', '#ecc8d0', '#f3e9b3', '#b4d2de'];
   for (let i = 0; i < 36; i++) {
     const s = document.createElement('div');
     s.className = 'confetti';
     const size = 14 + Math.random() * 18;
     s.style.width = s.style.height = size + 'px';
     s.style.background = colors[i % colors.length];
-    s.style.borderRadius = i % 2 ? '50%' : '4px';
+    s.style.borderRadius = block ? '0' : i % 2 ? '50%' : '4px';
     s.style.left = Math.random() * 100 + 'vw';
     s.style.animationDuration = 2 + Math.random() * 2 + 's';
     s.style.animationDelay = Math.random() * 0.8 + 's';
@@ -778,7 +964,7 @@ function renderWords() {
     const card = state.cards[x.c];
     const w = isWord(x) ? ' word' : '';
     if (!card) return `<div class="tile locked${w}"><div class="han">${isWord(x) ? '？？' : '？'}</div></div>`;
-    const stars = card.box >= 4 ? '⭐⭐⭐' : card.box >= 2 ? '⭐⭐' : '⭐';
+    const stars = (isBlock() ? '<i class="gem"></i>' : '⭐').repeat(card.box >= 4 ? 3 : card.box >= 2 ? 2 : 1);
     return `<button class="tile${w}" data-c="${x.c}"><span class="stars">${stars}</span><div class="han">${x.c}</div><div class="emo">${x.e}</div></button>`;
   };
   let html = '';
@@ -795,8 +981,11 @@ function renderWords() {
 }
 function renderStickers() {
   const grid = document.getElementById('sticker-grid');
-  grid.innerHTML = state.stickers.length
-    ? state.stickers.map(s => `<div class="tile sticker">${s}</div>`).join('')
+  // 方塊世界：物品欄，至少三行，空格補滿成行
+  const n = state.stickers.length;
+  const empty = isBlock() ? Math.max(27, Math.ceil(n / 9) * 9) - n : 0;
+  grid.innerHTML = n || empty
+    ? state.stickers.map(s => `<div class="tile sticker">${s}</div>`).join('') + '<div class="tile sticker"></div>'.repeat(empty)
     : `<div class="empty-note" style="grid-column:1/-1">每上完一堂就有一張貼紙！</div>`;
 }
 
