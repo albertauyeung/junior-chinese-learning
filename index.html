@@ -132,10 +132,27 @@
 
   /* reward */
   .reward-sticker {
-    font-size: clamp(120px, 26vh, 220px); line-height: 1.2; background: var(--card); border-radius: 50%;
+    font-size: clamp(90px, 18vh, 170px); line-height: 1.2; background: var(--card); border-radius: 50%;
     padding: 4vh; box-shadow: var(--shadow); animation: spin-in .9s ease-out;
   }
   @keyframes spin-in { from { transform: scale(0) rotate(-360deg); } to { transform: scale(1) rotate(0); } }
+  /* 上完堂：嗰頁貼紙，新貼紙「啪」一聲貼落去 */
+  .strip { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+  .strip-head { font-size: 22px; color: var(--muted); letter-spacing: .1em; }
+  .strip-slots { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; max-width: 92vw; }
+  .slot {
+    width: clamp(40px, 6vw, 60px); aspect-ratio: 1; border-radius: 16px; background: var(--card); box-shadow: var(--shadow);
+    display: grid; place-items: center; font-size: clamp(24px, 3.8vw, 38px); position: relative;
+  }
+  .slot.new { animation: stamp .45s ease-out backwards; animation-delay: calc(1s + var(--d) * .3s); }
+  @keyframes stamp { from { transform: scale(2.6); opacity: 0; } 60% { transform: scale(.9); opacity: 1; } to { transform: scale(1); } }
+  /* 未儲到：剪影 */
+  .empty .emo { filter: brightness(0); opacity: .13; }
+  .count {
+    position: absolute; right: 4px; bottom: 4px; font: 14px/1 var(--han); font-weight: 700; color: #fff;
+    background: var(--teal); border-radius: 99px; padding: 3px 7px;
+  }
+  .tile.sticker .count { font-size: 18px; right: 10px; bottom: 10px; }
   .reward-text { font-size: 52px; font-weight: 400; color: var(--teal); letter-spacing: .1em; }
   .confetti { position: fixed; top: -40px; pointer-events: none; animation: fall linear forwards; z-index: 10; }
   @keyframes fall { to { transform: translateY(110vh) rotate(540deg); } }
@@ -158,6 +175,7 @@
   .level-head small { font-size: 18px; color: var(--muted); }
   .tile.locked { background: rgba(255,255,255,.45); color: #cfccc6; box-shadow: none; }
   .tile.sticker { font-size: 80px; }
+  .tile.sticker .emo { font-size: inherit; margin: 0; line-height: 1; }
   .stars { position: absolute; top: 8px; right: 12px; font-size: 16px; }
   .empty-note { font-size: 26px; color: var(--muted); margin-top: 10vh; text-align: center; line-height: 1.7; }
 
@@ -291,10 +309,18 @@
     flex: 0 1 auto; width: min(900px, 100%); margin-top: 24px; padding: 16px;
     grid-template-columns: repeat(9, 1fr); gap: 4px; background: var(--card); box-shadow: var(--gui);
   }
-  [data-theme="block"] .tile.sticker {
-    font-size: clamp(26px, 5.5vw, 56px); background: #8b8b8b;
+  [data-theme="block"] .tile.sticker, [data-theme="block"] .slot {
+    font-size: clamp(26px, 5.5vw, 56px); background: #8b8b8b; border-radius: 0;
     box-shadow: inset 3px 3px 0 #373737, inset -3px -3px 0 #fff;
   }
+  [data-theme="block"] .slot { font-size: clamp(24px, 3.8vw, 38px); box-shadow: 0 0 0 4px var(--outline), inset 3px 3px 0 #373737, inset -3px -3px 0 #fff; }
+  [data-theme="block"] .empty .emo { opacity: .35; }
+  /* 物品欄入面嘅字：深灰、冇影 */
+  [data-theme="block"] #sticker-grid .level-head, [data-theme="block"] #sticker-grid .level-head small,
+  [data-theme="block"] #sticker-grid .empty-note { color: #404040; text-shadow: none; }
+  [data-theme="block"] .strip-head { color: #fff; text-shadow: 3px 3px 0 rgba(0,0,0,.4); }
+  /* 疊埋嘅數量：白字黑影，好似物品欄 */
+  [data-theme="block"] .count { background: none; padding: 0; font-size: 20px; text-shadow: 2px 2px 0 #3f3f3f; }
   [data-theme="block"] .grid { padding: 24px 8px; }
 
   /* 鑽石（代替星星）、方塊碎片 */
@@ -640,7 +666,22 @@ const LEVELS = [
 // 全部字同詞語，按學習次序排
 const ITEMS = LEVELS.flatMap((L, lv) => [...L.chars, ...L.words].map(x => ({ ...x, lv, say: x.say || x.c })));
 const isWord = x => x.c.length > 1;
-const STICKERS = ['🦄','🐼','🐶','🐱','🐰','🦊','🐻','🐨','🐯','🦁','🐸','🐵','🐧','🐥','🦋','🐞','🐙','🦖','🐳','🦒','🌈','🍓','🍦','🧁','🍩','🎈','🚀','🌟','🍉','🎀','🐬','🦩','🐢','🦔','🍒','🍭','🪁','🎠','🚂','🏰','🌻','🍀','🐝','🦕','🪐'];
+// 貼紙簿：每關一頁，格數 ≈ 嗰關要上幾多堂（字 + 詞語 ÷ 3）。過關嗰陣會貼滿成頁。
+// 最後一頁係驚喜頁：當前嗰頁貼滿咗、或者學晒全部關之後，貼紙就嚟呢度。
+const PAGES = [
+  { name: '花園',     s: ['🌻','🌷','🌈','🍀','🐞','🦋','🐝','🐌','🍄','🌳','🦔'] },
+  { name: '玩具箱',   s: ['🎲','🎈','🪀','🧩'] },
+  { name: '屋企',     s: ['🏠','🧸','🎂','🐶','🐱','🪁'] },
+  { name: '動物園',   s: ['🐼','🦁','🐯','🦒','🐘','🦓'] },
+  { name: '顏色盒',   s: ['🎨','🖍️','🦜','🦩','🍭','🎀'] },
+  { name: '天空',     s: ['🌞','⛄','☂️','🌙','⭐','⚡'] },
+  { name: '交通工具', s: ['🚀','🚂','✈️','🚁','⛵'] },
+  { name: '好食嘢',   s: ['🍓','🍉','🍦','🍩','🍕'] },
+  { name: '運動同音樂', s: ['⚽','🏀','🎸','🥁','🛴','🎺','🛹'] },
+  { name: '學校',     s: ['🎒','✏️','📚','🔭','🧪','🌍','🚌'] },
+  { name: '魔法王國', s: ['🦄','🐉','🧚','🏰','👑','💎','🪐'] },
+];
+const BONUS = { name: '海底驚喜', s: ['🐳','🐬','🐙','🐢','🦀','🐠','🦈','🐡','🦭','🐧','🦦','🪸'] };
 const PRAISE = ['好叻呀！', '啱喇！', '好嘢！', '叻叻豬！', '答啱咗！'];
 const NEW_PER_SESSION = 3;
 const MAX_REVIEWS = 6;
@@ -655,7 +696,7 @@ function loadState() {
     const s = JSON.parse(localStorage.getItem(STORE_KEY));
     if (s && s.cards) return s;
   } catch (e) {}
-  return { cards: {}, stickers: [], sessions: 0 };
+  return { cards: {}, stickers: [], album: {}, sessions: 0 };
 }
 function saveState() {
   try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); } catch (e) {}
@@ -770,7 +811,7 @@ function renderHome() {
   const lv = currentLevel();
   const where = lv < LEVELS.length ? `第 ${lv + 1} 關：${LEVELS[lv].name}` : '全部過晒關 🏆';
   document.getElementById('home-stats').textContent = !learned.length ? '撳「開始學字」學第一個字啦！'
-    : `${where} · 識 ${nc} 個字${nw ? `、${nw} 個詞語` : ''} · ${state.stickers.length} 張貼紙 ${isBlock() ? '💎' : '⭐'}`;
+    : `${where} · 識 ${nc} 個字${nw ? `、${nw} 個詞語` : ''} · ${stickerCount()} 張貼紙 ${isBlock() ? '💎' : '⭐'}`;
   // 經驗值：而家呢關學咗幾多
   const items = ITEMS.filter(x => x.lv === lv);
   const frac = items.length ? items.filter(x => state.cards[x.c]).length / items.length : 1;
@@ -909,20 +950,27 @@ function record(c, correct) {
 }
 
 function finishLesson() {
-  const sticker = STICKERS[Math.floor(Math.random() * STICKERS.length)];
-  state.stickers.push(sticker);
+  // 今堂學完一關：特別恭喜，嗰頁貼紙一次過貼滿
+  const from = lesson.startLevel, lv = currentLevel();
+  const levelUp = lv > from;
+  const { s: sticker, page, extra } = awardSticker(from, lv);
   state.sessions++;
   saveState();
-  // 今堂學完一關：特別恭喜
-  const lv = currentLevel();
-  const levelUp = lv > lesson.startLevel;
-  const title = levelUp ? `過咗第 ${lesson.startLevel + 1} 關！🏆` : '好叻呀！🎉';
-  const sayText = levelUp ? `好叻呀！你過咗第${lesson.startLevel + 1}關！你得到一張新貼紙！` : '好叻呀！你得到一張新貼紙！';
+  const home = PAGES[from];
+  const strips = [page];
+  if (levelUp && home && home !== page) strips.unshift(home);
+  const left = missing(page).length;
+  const pageDone = !left && (extra.length || state.album[sticker] === 1);
+  const title = levelUp ? `過咗第 ${from + 1} 關！🏆` : pageDone ? '貼滿成頁！🎉' : '好叻呀！🎉';
+  const sayText = levelUp ? `好叻呀！你過咗第${from + 1}關！${(home || page).name}嗰頁貼滿晒喇！`
+    : pageDone ? `好叻呀！你貼滿咗${page.name}嗰頁！`
+    : state.album[sticker] > 1 ? '好叻呀！你又得到一張貼紙！'
+    : `好叻呀！你得到一張新貼紙！仲差${left}張就貼滿${page.name}！`;
   const stage = document.getElementById('stage');
   stage.innerHTML = `
     <div class="reward-text">${title}</div>
     <div class="reward-sticker">${sticker}</div>
-    <div class="prompt">你得到一張新貼紙！</div>
+    ${strips.map(p => pageStrip(p, [sticker, ...extra])).join('')}
     <button class="big-btn next-btn">返主頁</button>`;
   stage.querySelector('.next-btn').onclick = () => show('home');
   // 方塊世界過關：升級音效
@@ -979,14 +1027,72 @@ function renderWords() {
   grid.innerHTML = html;
   grid.querySelectorAll('[data-c]').forEach(b => b.onclick = () => speak(byChar[b.dataset.c].say));
 }
+// ---------- 貼紙 ----------
+const missing = p => p.s.filter(s => !state.album[s]);
+const pickOne = a => a[Math.floor(Math.random() * a.length)];
+// 每堂一張：貼喺而家呢關嗰頁；嗰頁滿咗就去驚喜頁；全部滿晒就疊多一張（×2）
+function awardSticker(from, to) {
+  const home = PAGES[from];
+  const page = home && missing(home).length ? home : missing(BONUS).length ? BONUS : home || BONUS;
+  const s = pickOne(missing(page).length ? missing(page) : page.s);
+  state.album[s] = (state.album[s] || 0) + 1;
+  // 過關：嗰頁剩低嘅格一次過貼滿
+  const extra = [];
+  for (let lv = from; lv < to; lv++) if (PAGES[lv]) missing(PAGES[lv]).forEach(x => { state.album[x] = 1; extra.push(x); });
+  return { s, page, extra };
+}
+// 舊版係每堂隨機一張：轉做貼紙簿，過咗嘅關成頁貼滿，而家呢關按學咗幾多估返貼咗幾格；舊貼紙照留喺「舊貼紙」
+function ensureAlbum() {
+  if (state.album) return;
+  state.album = {};
+  const cur = currentLevel();
+  PAGES.forEach((p, lv) => {
+    if (lv < cur) p.s.forEach(s => state.album[s] = 1);
+    if (lv === cur) {
+      const n = ITEMS.filter(x => x.lv === lv && state.cards[x.c]).length;
+      shuffle(p.s).slice(0, Math.min(Math.floor(n / 3), p.s.length - 1)).forEach(s => state.album[s] = 1);
+    }
+  });
+  saveState();
+}
+const stickerCount = () => Object.values(state.album).reduce((a, b) => a + b, 0);
+// 一格貼紙：未有就係剪影；有多過一張就顯示數量
+function slotHtml(s, n, cls = '', style = '') {
+  return `<div class="${cls}${n ? '' : ' empty'}"${style}><span class="emo">${s}</span>${n > 1 ? `<b class="count">${n}</b>` : ''}</div>`;
+}
+// 上完堂顯示嗰頁：新貼紙一張張「啪」落去
+function pageStrip(p, fresh) {
+  const got = p.s.length - missing(p).length;
+  return `<div class="strip">
+    <div class="strip-head">${p.name}　${got} / ${p.s.length}</div>
+    <div class="strip-slots">${p.s.map(s => {
+      const i = fresh.indexOf(s);
+      return slotHtml(s, state.album[s], 'slot' + (i >= 0 ? ' new' : ''), i >= 0 ? ` style="--d:${i}"` : '');
+    }).join('')}</div></div>`;
+}
 function renderStickers() {
   const grid = document.getElementById('sticker-grid');
-  // 方塊世界：物品欄，至少三行，空格補滿成行
-  const n = state.stickers.length;
-  const empty = isBlock() ? Math.max(27, Math.ceil(n / 9) * 9) - n : 0;
-  grid.innerHTML = n || empty
-    ? state.stickers.map(s => `<div class="tile sticker">${s}</div>`).join('') + '<div class="tile sticker"></div>'.repeat(empty)
-    : `<div class="empty-note" style="grid-column:1/-1">每上完一堂就有一張貼紙！</div>`;
+  // 顯示到而家呢一關嘅頁，之後嘅頁鎖住
+  const cur = Math.min(currentLevel(), PAGES.length - 1);
+  const head = (title, p) => {
+    const n = p.s.length - missing(p).length;
+    return `<div class="level-head">${title}<small>${n === p.s.length ? '貼滿咗！🎉' : `${n} / ${p.s.length}`}</small></div>`;
+  };
+  const tiles = p => p.s.map(s => slotHtml(s, state.album[s], 'tile sticker')).join('');
+  let html = '';
+  PAGES.forEach((p, lv) => { if (lv <= cur) html += head(`第 ${lv + 1} 關 · ${p.name}`, p) + tiles(p); });
+  const left = PAGES.length - 1 - cur;
+  if (left > 0) html += `<div class="empty-note" style="grid-column:1/-1;margin:2vh 0">🔒 過關就有新一頁！仲有 ${left} 頁</div>`;
+  if (BONUS.s.some(s => state.album[s])) html += head(`🎁 ${BONUS.name}`, BONUS) + tiles(BONUS);
+  if (state.stickers.length) {
+    const old = {};
+    state.stickers.forEach(s => old[s] = (old[s] || 0) + 1);
+    html += `<div class="level-head">舊貼紙</div>` + Object.entries(old).map(([s, n]) => slotHtml(s, n, 'tile sticker')).join('');
+  }
+  grid.innerHTML = html;
+  // 捲去而家呢一頁
+  const h = grid.querySelectorAll('.level-head')[cur];
+  grid.scrollTop = cur && h ? h.offsetTop - 8 : 0;
 }
 
 // ---------- 家長（長按 1.5 秒入） ----------
@@ -1035,12 +1141,13 @@ function renderParent() {
 document.getElementById('test-voice').onclick = () => speak('你好！我哋一齊學中文字啦！');
 document.getElementById('reset-btn').onclick = () => {
   if (confirm('確定要清除所有學習進度同貼紙？')) {
-    state = { cards: {}, stickers: [], sessions: 0 };
+    state = { cards: {}, stickers: [], album: {}, sessions: 0 };
     saveState();
     renderParent();
   }
 };
 
+ensureAlbum();
 renderHome();
 if ('serviceWorker' in navigator && location.protocol !== 'file:') {
   navigator.serviceWorker.register('sw.js').catch(() => {});
